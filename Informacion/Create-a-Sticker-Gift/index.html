@@ -1,992 +1,556 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E??%3C/text%3E%3C/svg%3E" sizes="32x32">
-    
-    <title>Eventos Reality - Plataforma de Eventos Virtuales</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #6366f1;
-            --primary-hover: #4f46e5;
-            --secondary-color: #ec4899;
-            --bg-dark: #0f0f23;
-            --bg-card: #1a1a2e;
-            --bg-elevated: #252542;
-            --text-primary: #ffffff;
-            --text-secondary: #a1a1aa;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
-            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Animated Background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.1) 0%, transparent 40%);
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-20px, 20px) rotate(240deg); }
-        }
-
-        /* Header */
-        .header {
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(20px);
-            background: rgba(15, 15, 35, 0.8);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 100;
-            padding: 1rem 0;
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            -webkit-text-fill-color: initial;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-primary);
-            transition: width 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 6rem 2rem 4rem;
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--primary-color);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        /* Event Grid */
-        .events-section {
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .section-title {
-            font-size: 1.875rem;
-            font-weight: 700;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 0.5rem;
-            background: var(--bg-card);
-            padding: 0.5rem;
-            border-radius: 12px;
-        }
-
-        .filter-tab {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .filter-tab.active {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-        }
-
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
-        /* Event Card */
-        .event-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .event-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .event-image {
-            width: 100%;
-            height: 180px;
-            background: var(--gradient-primary);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .event-image::after {
-            content: '??';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 4rem;
-            opacity: 0.3;
-        }
-
-        .event-status {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .event-status.live {
-            background: rgba(239, 68, 68, 0.9);
-            animation: live-pulse 2s infinite;
-        }
-
-        @keyframes live-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-        }
-
-        .event-content {
-            padding: 1.5rem;
-        }
-
-        .event-date {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--primary-color);
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .event-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-        }
-
-        .event-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .event-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .event-attendees {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .attendee-avatars {
-            display: flex;
-            margin-left: 0.5rem;
-        }
-
-        .avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            border: 2px solid var(--bg-card);
-            margin-left: -8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .avatar:first-child {
-            margin-left: 0;
-        }
-
-        /* Stats Section */
-        .stats-section {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 4rem 2rem;
-            margin: 4rem 0;
-        }
-
-        .stats-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-item p {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--bg-dark);
-            border-top: 1px solid var(--border-color);
-            padding: 3rem 2rem 2rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-bottom: 3rem;
-        }
-
-        .footer-brand {
-            max-width: 300px;
-        }
-
-        .footer-brand .logo {
-            margin-bottom: 1rem;
-            display: inline-flex;
-        }
-
-        .footer-brand p {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.6;
-        }
-
-        .footer-links h4 {
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .footer-links ul {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: var(--primary-color);
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--bg-card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 1px solid var(--border-color);
-        }
-
-        .social-links a:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        /* Mobile Menu */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: var(--bg-card);
-                flex-direction: column;
-                padding: 1rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .hero {
-                padding: 4rem 1.5rem;
-            }
-
-            .events-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--bg-elevated);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
-        }
-    </style>
-<base target="_blank">
-</head>
-<body>
-    <!-- Background Animation -->
-    <div class="bg-animation"></div>
-
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <a href="#" class="logo">
-                <div class="logo-icon">??</div>
-                Reality
-            </a>
-            
-            <button class="mobile-menu-btn" onclick="toggleMenu()">?</button>
-            
-            <nav>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#eventos">Eventos</a></li>
-                    <li><a href="#comunidad">Comunidad</a></li>
-                    <li><a href="#precios">Precios</a></li>
-                </ul>
-            </nav>
-            
-            <button class="btn-primary">Comenzar Ahora</button>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="inicio">
-        <div class="hero-badge">
-            <span>??</span>
-            <span>+500 eventos este mes</span>
-        </div>
-        
-        <h1>Descubre Eventos Virtuales Incre��bles</h1>
-        
+<html lang="ja"><head><style data-emotion="css" data-s=""></style><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZD9SHCZN8L&amp;cx=c&amp;gtm=4e6241"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-C26HQ82G79&amp;cx=c&amp;gtm=4e6241"></script><script src="chrome-extension://infdcenbdoibcacogknkjleclhnjdmfh/content/captcha/recaptcha/hunter.js"></script><script src="chrome-extension://infdcenbdoibcacogknkjleclhnjdmfh/content/captcha/recaptcha/interceptor.js"></script><script src="chrome-extension://infdcenbdoibcacogknkjleclhnjdmfh/content/communication_helpers.js"></script><script src="chrome-extension://infdcenbdoibcacogknkjleclhnjdmfh/content/core_helpers.js"></script> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"> <link rel="icon" type="image/png" href="/img/favicon-16.ico" sizes="16x16"> <link rel="icon" type="image/png" href="/img/favicon-32.ico" sizes="32x32"> <title>イベント</title> <link href="/css/chunk-common.ee86df4e.css" rel="preload" as="style"><link href="/css/chunk-vendors.79ba555c.css" rel="preload" as="style"><link href="/js/chunk-common.7fd5a5de.js" rel="preload" as="script"><link href="/js/chunk-vendors.e5778a7d.js" rel="preload" as="script"><link href="/js/index.2425b620.js" rel="preload" as="script"><link href="/css/chunk-vendors.79ba555c.css" rel="stylesheet"><link href="/css/chunk-common.ee86df4e.css" rel="stylesheet"><captcha-widgets></captcha-widgets><script src="https://js.stripe.com/v3"></script><style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
+</style><script src="https://www.googletagmanager.com/gtag/js?l=dataLayer&amp;id=G-ZD9SHCZN8L" async=""></script><style data-styled="active" data-styled-version="5.3.11"></style></head> <body class="body__scrolling"> <noscript> <strong>We're sorry but this web contents doesn't work properly without JavaScript enabled. Please enable it to continue.</strong> </noscript> <div id="app"><div data-v-39a62f00="" class="index"><div data-v-39a62f00="" class="index"><!----><div data-v-453d1248="" data-v-39a62f00="" class="banner_wrapper"><div data-v-453d1248="" class="banner_container"><!----><!----><div data-v-0f43dbc5="" data-v-453d1248="" class="banner_countdown_container"><div data-v-0f43dbc5="" class="banner_countdown" style="max-width: 500px; line-height: 30px; margin: 0px auto; font-size: 14px; font-weight: bold; text-align: center; color: rgb(15, 15, 15); transition: background-color 0.8s, height 0.8s; background-color: rgb(253, 204, 187); height: 30px; overflow: hidden;"><!----><span data-v-0f43dbc5="">
+      Hasta el final del evento: 1 d 13 h 5 min 18 s
+    </span><!----></div></div><img data-v-453d1248="" src="https://image-api.reality.wrightflyer.net/api/v1/image/event-header/22509/1768276816" alt="" class="banner__img"><!----></div></div><div data-v-1fc4fb58="" data-v-39a62f00="" id="tab" next="2"><div data-v-1fc4fb58="" class="tab__itemContainer" style="--font-color: #0f0f0f; --background-color: #FDCCBB;"><div data-v-1fc4fb58="" class="tab__itemContent"><div data-v-1fc4fb58="" class="tab__item" style="border-bottom: 3px solid rgb(15, 15, 15);">
+        Detalles del evento
+      </div><div data-v-1fc4fb58="" class="tab__item" style="">
+        Puntuaciones
+      </div></div></div><!----><div data-v-1fc4fb58="" class="tab__content"><div data-v-1fc4fb58="" id="description" style=""><div data-v-1fc4fb58="" style="--background-color: #FDCCBB; --background-image: none; --backgournd-repeat: no-repeat;"><div class="description__wrapper">
+  <div class="description__sectionWrapper">
+    <h1 class="">
+      The winners of this event earn the exclusive privilege of designing a
+      gift!
+    </h1>
+    <h1 class="">
+      These gifts will be available to all users any time! Score high, and
+      everyone could be gifting stickers with your original design!
+    </h1>
+    <p class="">Original gift image</p>
+    <figure>
+      <img src="https://content-cf.reality.app/6ead3b317ae2a6f13dd5dbf9190fc02b6212c1b2.png?t=1681363059" class="" width="100%">
+      <figcaption style="text-align: center">
         <p>
-            Conecta con personas de todo el mundo en experiencias inmersivas. 
-            Desde conciertos hasta conferencias, todo en un solo lugar.
+          *The image above is a sample. Actual layout and design may differ.
         </p>
-        
-        <div class="hero-cta">
-            <button class="btn-primary">Explorar Eventos</button>
-            <button class="btn-secondary">Crear Evento</button>
-        </div>
-    </section>
+      </figcaption>
+    </figure>
+  </div>
+  <div class="description__sectionWrapper">
+    <div style="
+        background-image: url(&quot;https://content-cf.reality.app/c23fc6ef4476d5dc9991aa287e2c7320470a0466.png&quot;);
+        text-align: center;
+        height: 57px;
+        display: flex;
+        justify-content: center;
+        background-size: cover;
+        align-items: center;
+        margin: -10px -10px 0 -10px;
+      ">
+      <h2 class="" style="font-weight: 600; font-size: 22px; line-height: 100%; margin: 0">
+        Awards
+      </h2>
+    </div>
+    <table class="table-container">
+      <tbody class="">
+        <tr class="">
+          <th class="" colspan="2" style="
+              background-color: rgba(24, 141, 255, 0.2);
+              border-bottom: 1px solid #e8e8e8;
+            ">
+            Streamer
+          </th>
+        </tr>
+        <tr class="">
+          <th class="" colspan="1" style="
+              background-color: rgba(242, 242, 242, 1);
+              border-bottom: 1px solid #e8e8e8;
+            ">
+            Conditions
+          </th>
+          <th class="" colspan="1" style="
+              background-color: rgba(242, 242, 242, 1);
+              border-bottom: 1px solid #e8e8e8;
+              border-left: 1px solid #ffffff;
+            ">
+            Awards
+          </th>
+        </tr>
+        <tr class="">
+          <td class="" colspan="1">
+            Rank 1st - 3rd<br>and get a 3,000,000 or higher event score
+          </td>
+          <td class="" colspan="1" style="undefinedborder-left: 1px solid #ffffff">
+            Opportunity to create an original gift based on an image to be
+            submitted by the user.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="description__sectionWrapper">
+    <div style="
+        background-image: url(&quot;https://content-cf.reality.app/c23fc6ef4476d5dc9991aa287e2c7320470a0466.png&quot;);
+        text-align: center;
+        height: 57px;
+        display: flex;
+        justify-content: center;
+        background-size: cover;
+        align-items: center;
+        margin: -10px -10px 0 -10px;
+      ">
+      <h2 class="" style="font-weight: 600; font-size: 22px; line-height: 100%; margin: 0">
+        Schedule
+      </h2>
+    </div>
+    <div style="display: flex; align-items: center; margin: 4px 0">
+      <img class="description__section__icon" src="/img/txtIcon.png">
+      <h3 class="" style="
+          display: inline;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 8px 0;
+        ">
+        Entry Period
+      </h3>
+    </div>
+    <p class=""><strong>January 26, 2026 at 18:00 -05 to February 8, 2026 at 23:59 -05</strong></p>
+    <p class="">
+      Note: Event entries will be accepted until the end of the event period.
+    </p>
+    <p class=""></p>
+    <div style="display: flex; align-items: center; margin: 4px 0">
+      <img class="description__section__icon" src="/img/txtIcon.png">
+      <h3 class="" style="
+          display: inline;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 8px 0;
+        ">
+        Event Period
+      </h3>
+    </div>
+    <p class=""><strong>February 2, 2026 at 18:00 -05 to February 8, 2026 at 23:59 -05</strong></p>
+    <p class=""></p>
+    <div style="display: flex; align-items: center; margin: 4px 0">
+      <img class="description__section__icon" src="/img/txtIcon.png">
+      <h3 class="" style="
+          display: inline;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 8px 0;
+        ">
+        Award Distribution Period
+      </h3>
+    </div>
+    <p class="">■Original gift: To be released approximately 3 months later.</p>
+  </div>
+  <div class="description__sectionWrapper">
+    <div style="
+        background-image: url(&quot;https://content-cf.reality.app/c23fc6ef4476d5dc9991aa287e2c7320470a0466.png&quot;);
+        text-align: center;
+        height: 57px;
+        display: flex;
+        justify-content: center;
+        background-size: cover;
+        align-items: center;
+        margin: -10px -10px 0 -10px;
+      ">
+      <h2 class="" style="font-weight: 600; font-size: 22px; line-height: 100%; margin: 0">
+        Award Details
+      </h2>
+    </div>
+    <p class="">
+      - Only users who have their region set to the US for the entire event
+      period are eligible for receiving Awards. Users who switch regions during
+      the event will not be eligible.
+    </p>
+    <p class=""></p>
+    <p class="">■Original Gift Creation</p>
+    <p class="">- Creators: Users who rank 1st through 3rd in this event.</p>
+    <p class="">
+      - These users will be notified by February 10, 2026 at 23:59 -05 through the
+      "Chat" screen in the REALITY App.
+    </p>
+    <p class="">
+      - The gift name, base image to be used, and creator name must be submitted
+      by February 22, 2026 at 09:59 -05.
+    </p>
+    <p class="">
+      - These users will be asked to submit a Certificate of transfer of rights
+      to the illustration. Failure to do so will result in the cancellation of
+      the prize.
+    </p>
+    <p class="">
+      Note: Users who did not rank in the top 3 will not be contacted. Thank you
+      for your understanding.
+    </p>
+    <p class="">
+      - The gifts are scheduled to be released approximately 3 months later.
+    </p>
+    <p class="">- These gifts will be released as Coin gifts.</p>
+    <p class="">
+      - The gifts will be animated gifts like "GG", "See you!" and "Good night".
+      You cannot designate any other animation types.
+    </p>
+    <p class="">
+      - If you are unable to respond to inquiries regarding award creation
+      within the set time period, your award design privileges may be revoked.
+    </p>
+    <p class=""></p>
+    <p class="">■Images to be Used for Gifts</p>
+    <figure>
+      <img src="https://content-cf.reality.app/bbc774e0265bb36b97c31f992e78541ae42b3469.png?t=1681363059" class="" width="100%">
+    </figure>
+    <p class="">
+      - Image must be
+      <strong>a size 512 x 512px PNG file with a transparent background</strong>.
+    </p>
+    <p class="">- White trim and shadow will be prepared by our team.</p>
+    <p class="">
+      - <a href="https://reality.app/notice/page/rujv1p6dzm1f">Click here</a> to
+      see previous gift creations.
+    </p>
+  </div>
+  <div class="description__sectionWrapper">
+    <div style="display: flex; align-items: center; margin: 4px 0">
+      <img class="description__section__icon" src="/img/txtIcon.png">
+      <h3 class="" style="
+          display: inline;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 8px 0;
+        ">
+        About Event Score and Rankings
+      </h3>
+    </div>
+    <p class="">Event score is calculated by the following method.</p>
+    <p class=""><strong>(Total coin value of viewer gifts) x 10</strong></p>
+    <p class=""></p>
+    <p class="">Notes:</p>
+    <p class="">- Only event scores tallied during this event are counted.</p>
+    <p class="">
+      - Items received before you enter the event will not count toward your
+      event score, regardless of when they were received.
+    </p>
+    <p class="">
+      - If two or more users have the same event score, their rank is determined
+      in the following order.
+    </p>
+    <p class="">
+      (1) If the event score is the same, the user with the most followers at
+      the end of the event will rank higher.
+    </p>
+    <p class="">
+      (2) If the number of followers is the same, the user who entered the event
+      earliest will rank higher.
+    </p>
+    <p class="">
+      *In case the user switches the participating event, the latest switching
+      date and time will be considered as the entry timing.
+    </p>
+  </div>
+  <div class="description__sectionWrapper">
+    <h1 class="">
+      <span style="color: red">Please Read: Important Notes Regarding This Event</span>
+    </h1>
+    <input type="checkbox" style="display: none" id="2623ce9d-a620-80cc-80ae-d834676e52f3"><label style="background-color: #f2f2f2" class="accordion-label" for="2623ce9d-a620-80cc-80ae-d834676e52f3"><div style="display: flex; align-items: center; margin: 4px 0">
+        <img class="description__section__icon" src="/img/txtIcon.png">
+        <h3 class="" style="
+            display: inline;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px 0;
+          ">
+          Event Summary
+        </h3>
+      </div>
+      <img class="accordion-arrow" src="https://content-cf.reality.app/f8bebc8ec4081d3bc31a5d921430b4c6f7719441.png"></label>
+    <div class="accordion-content">
+      <p class="">
+        Event participants will be scored on the viewer gifts they receive
+        during the event. Participants can then earn bonuses based on their
+        event score. Only users who tap the "Enter" or "Pre-Enter" button on the
+        event page can join the event.
+      </p>
+      <p class="">
+        Users who do not apply will not be eligible to receive points for the
+        event score.
+      </p>
+      <p class="">
+        Only users who streamed for 15 minutes or longer each day for 7 or more
+        days may enter.
+      </p>
+    </div>
+    <input type="checkbox" style="display: none" id="2623ce9d-a620-80e1-95f3-d994a2a6bc4f"><label style="background-color: #f2f2f2" class="accordion-label" for="2623ce9d-a620-80e1-95f3-d994a2a6bc4f"><div style="display: flex; align-items: center; margin: 4px 0">
+        <img class="description__section__icon" src="/img/txtIcon.png">
+        <h3 class="" style="
+            display: inline;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px 0;
+          ">
+          Handling of Personal Information
+        </h3>
+      </div>
+      <img class="accordion-arrow" src="https://content-cf.reality.app/f8bebc8ec4081d3bc31a5d921430b4c6f7719441.png"></label>
+    <div class="accordion-content">
+      <p class="">
+        - The Company will collect the following identifying information (herein
+        referred to as "personal information") from the award winners for this
+        event: REALITY account name, ID and other information that can identify
+        the individual.
+      </p>
+      <p class="">
+        - Personal information will be used for the purpose of correspondence
+        for this event, award distribution, and handling inquiries.
+      </p>
+      <p class="">
+        - Personal information will not be disclosed or provided to third
+        parties other than subcontractors without the consent of the customer
+        (except when required by law).
+      </p>
+      <p class="">
+        - For other aspects of handling of personal information not specified
+        above, please refer to our
+        <a href="https://reality.inc/en/privacypolicy/">Privacy Policy</a>.
+      </p>
+    </div>
+    <input type="checkbox" style="display: none" id="2623ce9d-a620-80e1-8e99-eb890108d15c"><label style="background-color: #f2f2f2" class="accordion-label" for="2623ce9d-a620-80e1-8e99-eb890108d15c"><div style="display: flex; align-items: center; margin: 4px 0">
+        <img class="description__section__icon" src="/img/txtIcon.png">
+        <h3 class="" style="
+            display: inline;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px 0;
+          ">
+          How to Enter
+        </h3>
+      </div>
+      <img class="accordion-arrow" src="https://content-cf.reality.app/f8bebc8ec4081d3bc31a5d921430b4c6f7719441.png"></label>
+    <div class="accordion-content">
+      <p class="">Log into the REALITY app and tap the Notifications icon.</p>
+      <p class="">
+        Find the notice titled "Create a Sticker Gift!" and read the event's terms and
+        conditions. When finished, tap the "Enter" or "Pre-Enter" button to
+        finish your application to partake in the event.
+      </p>
+    </div>
+    <input type="checkbox" style="display: none" id="2623ce9d-a620-8006-85df-f9825ec05f0a"><label style="background-color: #f2f2f2" class="accordion-label" for="2623ce9d-a620-8006-85df-f9825ec05f0a"><div style="display: flex; align-items: center; margin: 4px 0">
+        <img class="description__section__icon" src="/img/txtIcon.png">
+        <h3 class="" style="
+            display: inline;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px 0;
+          ">
+          Entry Requirement
+        </h3>
+      </div>
+      <img class="accordion-arrow" src="https://content-cf.reality.app/f8bebc8ec4081d3bc31a5d921430b4c6f7719441.png"></label>
+    <div class="accordion-content">
+      <p class="">
+        - Users who streamed for 15 minutes or longer each day for 7 or more
+        days.
+      </p>
+      <p class="">
+        - Users with at least 200 followers upon event entry (Events with
+        follower requirements for entry vary. Even if your number of followers
+        changes during an event, events you’ve already entered will not
+        automatically change.)
+      </p>
+      <p class="">
+        - After confirming and agreeing to the contents of this page, users may
+        participate in the event as specified by the REALITY Corporation (herein
+        referred to as the “Company”).
+      </p>
+      <p class="">
+        - Participation is limited to users who, after confirming and agreeing
+        to the contents of this page, may participate in the event as specified
+        by the Company.
+      </p>
+      <p class="">
+        Note: Users who do not meet entry requirements may have their entry
+        canceled and their rights to awards revoked.
+      </p>
+    </div>
+    <input type="checkbox" style="display: none" id="2623ce9d-a620-80bb-a1b9-ce3e4543ded4"><label style="background-color: #f2f2f2" class="accordion-label" for="2623ce9d-a620-80bb-a1b9-ce3e4543ded4"><div style="display: flex; align-items: center; margin: 4px 0">
+        <img class="description__section__icon" src="/img/txtIcon.png">
+        <h3 class="" style="
+            display: inline;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px 0;
+          ">
+          Attention and Disclaimers
+        </h3>
+      </div>
+      <img class="accordion-arrow" src="https://content-cf.reality.app/f8bebc8ec4081d3bc31a5d921430b4c6f7719441.png"></label>
+    <div class="accordion-content">
+      <p class="">■Please Note Regarding the Final Design</p>
+      <p class="">
+        Any designs that fall under any of the following will be disqualified.
+        Additionally, after further review, any designs determined to reasonably
+        fall under any of the following may be disqualified from selection.
+      </p>
+      <p class="">
+        - Designs that infringe on the property rights, intellectual property
+        rights including copyrights, reputation, credence, or privacy etc. of
+        the Company (defined in the Requirements section below) or any third
+        parties.
+      </p>
+      <p class="">
+        - Designs that can be considered obscene, vicious, or discriminatory, or
+        cause distress.
+      </p>
+      <p class="">- Designs that are offensive to public laws and decency.</p>
+      <p class="">
+        - Designs deemed by the Company to be inappropriate to make public.
+      </p>
+      <p class="">
+        - Designs that have already been commercialized or are planned to be
+        commercialized, have already been submitted into other contests or
+        similar, or were awarded in other contests or similar.
+      </p>
+      <p class="">
+        - Designs that are missing necessary details or with incorrect details.
+      </p>
+      <p class="">
+        - Designs that are otherwise deemed inappropriate by the Company.
+      </p>
+      <p class="">
+        - The copyright of the submitted work ultimately employed by the Company
+        as the original gift award (including the rights stipulated in Articles
+        27 and 28 of the Japan Copyright Act) shall belong to the Company.
+      </p>
+      <p class="">
+        - Users who rank 1st through 3rd in this event (hereinafter “award
+        winners”) shall not exercise their moral rights against the Company or
+        any third party designated by the Company.
+      </p>
+      <p class="">
+        - Regardless of whether or not the submitter is an award winner, the
+        submitter consents in advance that all or part of the work submitted to
+        this event may be reproduced on the REALITY official Twitter account,
+        in-app notifications, websites operated by the Company, physical
+        publications etc., or exhibited at events etc. The reproduced content
+        may be partially adapted or modified.
+      </p>
+      <p class="">
+        - The Company will not bear any costs incurred by submitting the image.
+      </p>
+      <p class="">
+        - The personal information handled in this event will be used in
+        accordance with the
+        <a href="https://reality.app/notice/page/PwgwVtZgnazj">Create a Sticker Gift! Event Privacy Policy</a>. Please agree to this privacy policy before applying for this event.
+      </p>
+      <p class=""></p>
+      <p class="">■Other Notes</p>
+      <p class="">
+        For more information, please click&nbsp;<a href="https://reality.app/notice/page/df3e66e23qhr">here</a>.
+      </p>
+      <p class="">
+        If you have any other questions, please contact us from&nbsp;<a href="https://help.le.wrightflyer.net/?action=inquiry_form&amp;app_id=258305124483241">here</a>.
+      </p>
+      <p class="">
+        Please be sure to include the name of the event in the text in your
+        inquiry.
+      </p>
+    </div>
+  </div>
+</div>
 
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3>50K+</h3>
-                <p>Usuarios Activos</p>
-            </div>
-            <div class="stat-item">
-                <h3>1,200+</h3>
-                <p>Eventos Realizados</p>
-            </div>
-            <div class="stat-item">
-                <h3>98%</h3>
-                <p>Satisfacci��n</p>
-            </div>
-            <div class="stat-item">
-                <h3>150+</h3>
-                <p>Pa��ses</p>
-            </div>
-        </div>
-    </section>
+  <style>
+    .description__sectionWrapper p {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      min-height: 20px;
+    }
+    .indented {
+      padding-left: 1.5em;
+    }
+    .column-list {
+      display: flex;
+      justify-content: space-between;
+    }
+    .column {
+      padding: 0 1em;
+      flex: 1;
+    }
+    .accordion-item {
+      border-bottom: 1px solid #ddd;
+    }
+    .accordion-item input {
+      display: none;
+    }
+    .accordion-arrow {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      transform-origin: center;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-right: 16px;
+      align-items: center;
+    }
+    .accordion-heading {
+      display: flex;
+    }
+    .accordion-label {
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+      margin: 6px 0;
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 1rem;
+      transition: max-height 0.3s ease;
+      border-radius: 0 0 4px 4px;
+    }
+    input:checked + .accordion-label {
+      border-radius: 4px 4px 0 0;
+    }
+    input:checked + .accordion-label + .accordion-content {
+      max-height: 9999px; /* コンテンツの実際のサイズに合わせて表示するために十分大きな値を設定 */
+      margin-bottom: 4px;
+    }
+    input:checked + .accordion-label .accordion-arrow {
+      transform: rotate(180deg);
+      transform-origin: center;
+    }
+  </style></div></div><div data-v-1fc4fb58="" id="result" event="[object Object]" style="display: none;"><div data-v-e313257e="" data-v-1fc4fb58="" id="content"><div data-v-e313257e=""><!----><div data-v-e313257e=""><!----><div data-v-e313257e="" class="rankView"><div data-v-e313257e="" class="rankView__header">
+          Clasificaciones
 
-    <!-- Events Section -->
-    <section class="events-section" id="eventos">
-        <div class="section-header">
-            <h2 class="section-title">Pr��ximos Eventos</h2>
-            
-            <div class="filter-tabs">
-                <button class="filter-tab active">Todos</button>
-                <button class="filter-tab">M��sica</button>
-                <button class="filter-tab">Arte</button>
-                <button class="filter-tab">Tech</button>
-                <button class="filter-tab">Negocios</button>
-            </div>
-        </div>
-
-        <div class="events-grid">
-            <!-- Event Card 1 -->
-            <article class="event-card">
-                <div class="event-image">
-                    <span class="event-status live">En Vivo</span>
-                </div>
-                <div class="event-content">
-                    <div class="event-date">
-                        <span>??</span>
-                        <span>Hoy, 20:00 CET</span>
-                    </div>
-                    <h3 class="event-title">Concierto Virtual: Synthwave Nights</h3>
-                    <p class="event-description">
-                        Sum��rgete en una experiencia musical inmersiva con los mejores artistas de synthwave internacional.
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <div class="attendee-avatars">
-                                <div class="avatar">A</div>
-                                <div class="avatar">B</div>
-                                <div class="avatar">C</div>
-                            </div>
-                            <span>+2.4k asistentes</span>
-                        </div>
-                        <span style="color: var(--primary-color); font-weight: 600;">Gratis</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Event Card 2 -->
-            <article class="event-card">
-                <div class="event-image" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
-                    <span class="event-status">Pr��ximo</span>
-                </div>
-                <div class="event-content">
-                    <div class="event-date">
-                        <span>??</span>
-                        <span>Ma?ana, 18:00 CET</span>
-                    </div>
-                    <h3 class="event-title">Workshop: Dise?o UI/UX Avanzado</h3>
-                    <p class="event-description">
-                        Aprende las ��ltimas tendencias en dise?o de interfaces con expertos de la industria tecnol��gica.
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <div class="attendee-avatars">
-                                <div class="avatar">D</div>
-                                <div class="avatar">E</div>
-                            </div>
-                            <span>+850 asistentes</span>
-                        </div>
-                        <span style="color: var(--primary-color); font-weight: 600;">�25</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Event Card 3 -->
-            <article class="event-card">
-                <div class="event-image" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
-                    <span class="event-status">Pr��ximo</span>
-                </div>
-                <div class="event-content">
-                    <div class="event-date">
-                        <span>??</span>
-                        <span>15 Feb, 16:00 CET</span>
-                    </div>
-                    <h3 class="event-title">Startup Pitch: Demo Day Virtual</h3>
-                    <p class="event-description">
-                        Las startups m��s innovadoras presentan sus proyectos a inversores internacionales en tiempo real.
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <div class="attendee-avatars">
-                                <div class="avatar">F</div>
-                                <div class="avatar">G</div>
-                                <div class="avatar">H</div>
-                            </div>
-                            <span>+5k asistentes</span>
-                        </div>
-                        <span style="color: var(--primary-color); font-weight: 600;">Gratis</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Event Card 4 -->
-            <article class="event-card">
-                <div class="event-image" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
-                    <span class="event-status">Pr��ximo</span>
-                </div>
-                <div class="event-content">
-                    <div class="event-date">
-                        <span>??</span>
-                        <span>18 Feb, 19:30 CET</span>
-                    </div>
-                    <h3 class="event-title">Galer��a de Arte Digital 3D</h3>
-                    <p class="event-description">
-                        Recorrido virtual por una exposici��n de arte digital e NFTs con realidad aumentada.
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <div class="attendee-avatars">
-                                <div class="avatar">I</div>
-                                <div class="avatar">J</div>
-                            </div>
-                            <span>+1.2k asistentes</span>
-                        </div>
-                        <span style="color: var(--primary-color); font-weight: 600;">�10</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Event Card 5 -->
-            <article class="event-card">
-                <div class="event-image" style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
-                    <span class="event-status">Pr��ximo</span>
-                </div>
-                <div class="event-content">
-                    <div class="event-date">
-                        <span>??</span>
-                        <span>20 Feb, 14:00 CET</span>
-                    </div>
-                    <h3 class="event-title">Conferencia: El Futuro del Trabajo</h3>
-                    <p class="event-description">
-                        Expertos en RRHH y tecnolog��a discuten las tendencias laborales del pr��ximo decenio.
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <div class="attendee-avatars">
-                                <div class="avatar">K</div>
-                                <div class="avatar">L</div>
-                                <div class="avatar">M</div>
-                            </div>
-                            <span>+3.5k asistentes</span>
-                        </div>
-                        <span style="color: var(--primary-color); font-weight: 600;">Gratis</span>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Event Card 6 -->
-            <article class="event-card">
-                <div class="event-image" style="background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);">
-                    <span class="event-status">Pr��ximo</span>
-                </div>
-                <div class="event-content">
-                    <div class="event-date">
-                        <span>??</span>
-                        <span>22 Feb, 21:00 CET</span>
-                    </div>
-                    <h3 class="event-title">Stand-up Comedy: Noche de Risas</h3>
-                    <p class="event-description">
-                        Los mejores comediantes hispanohablantes en un show exclusivo de comedia en vivo.
-                    </p>
-                    <div class="event-footer">
-                        <div class="event-attendees">
-                            <div class="attendee-avatars">
-                                <div class="avatar">N</div>
-                                <div class="avatar">O</div>
-                            </div>
-                            <span>+900 asistentes</span>
-                        </div>
-                        <span style="color: var(--primary-color); font-weight: 600;">�15</span>
-                    </div>
-                </div>
-            </article>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <a href="#" class="logo">
-                    <div class="logo-icon">??</div>
-                    Reality
-                </a>
-                <p>
-                    La plataforma l��der en eventos virtuales. Conectamos personas 
-                    a trav��s de experiencias digitales inolvidables desde 2020.
-                </p>
-            </div>
-            
-            <div class="footer-links">
-                <h4>Plataforma</h4>
-                <ul>
-                    <li><a href="#">Eventos</a></li>
-                    <li><a href="#">Crear Evento</a></li>
-                    <li><a href="#">Precios</a></li>
-                    <li><a href="#">API</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-links">
-                <h4>Compa?��a</h4>
-                <ul>
-                    <li><a href="#">Sobre Nosotros</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Carreras</a></li>
-                    <li><a href="#">Contacto</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-links">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="#">Privacidad</a></li>
-                    <li><a href="#">T��rminos</a></li>
-                    <li><a href="#">Cookies</a></li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 Reality Events. Todos los derechos reservados.</p>
-            
-            <div class="social-links">
-                <a href="#" title="Twitter">??</a>
-                <a href="#" title="Instagram">??</a>
-                <a href="#" title="Discord">??</a>
-                <a href="#" title="YouTube">??</a>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile Menu Toggle
-        function toggleMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
-        }
-
-        // Filter Tabs
-        const filterTabs = document.querySelectorAll('.filter-tab');
-        filterTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                filterTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            });
-        });
-
-        // Smooth Scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Header scroll effect
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('.header');
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll > 100) {
-                header.style.background = 'rgba(15, 15, 35, 0.95)';
-            } else {
-                header.style.background = 'rgba(15, 15, 35, 0.8)';
-            }
-            
-            lastScroll = currentScroll;
-        });
-
-        // Add interaction to event cards
-        document.querySelectorAll('.event-card').forEach(card => {
-            card.addEventListener('click', () => {
-                // Aqu�� puedes agregar la navegaci��n a detalle del evento
-                console.log('Evento seleccionado');
-            });
-        });
-    </script>
-</body>
-</html>
+          <span data-v-e313257e="" class="rankView__header__participantsCounterContainer"><span data-v-e313257e="" class="rankView__header__participantsCounter"><img data-v-e313257e="" src="/img/icon-person.svg" class="rankView__header__participantsCounterIcon"><span data-v-e313257e="" class="rankView__header__participantsCounterText">47</span></span></span></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__ranker" style="background-image: url(&quot;/img/badgeBgFirst.png&quot;);">
+          1
+        </p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/fgsz4bt57aatpzy4w770rj8wjw/26caa1f2-567e-427e-9ea9-feb8c7e6b249/t/1769860776383/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">先読みﾁｬﾝ🍎🦋🌙@2/3〜🇺🇸オリギフ🔥</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">3,637,880</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__ranker" style="background-image: url(&quot;/img/badgeBgSecond.png&quot;);">
+          2
+        </p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/r5ye78rawjwvjbhmp99q4fgpeu/313b8929-bdeb-4d15-b26d-13a8651b9daf/t/1768821802892/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">ぢろ2/3-2/9オリギフガチ現在2位🥈</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">972,210</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__ranker" style="background-image: url(&quot;/img/badgeBgThird.png&quot;);">
+          3
+        </p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/cm40m4h8nqw1mdvtz5fgs0jcs6/3c6bafc3-c971-43d7-83b4-8d28d07064ce/t/1750205181262/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">あぐえむ🥑@2月3日〜オリギフガチ🔥</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">739,380</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          4<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/285p011vbq18d2p63tiqcgri86/b0fb11a9-ea07-488e-bc89-bcbf520e8165/t/1769580080335/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Akaze [STCKR EVENT]</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">155,900</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          5<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/i44u5yanmezzbi7nha4z4qc2dw/414b45fc-a85a-4ded-a097-60c4ee63126a/t/1770426586327/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">𓆩 Reizel 𓆪</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">44,850</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          6<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/7c1amfrs8mzz9incditsqq3q9t/c679a21a-20d5-4242-91be-361ebb9c4952/t/1764061233500/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Charming🍵ちゃぁみん</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">10,300</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          7<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile/fajhgrh2tdwbeb421sfnmhfim7/1699024821/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">einelotta </p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">8,230</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          8<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/msy64tcb8bztjn8ur4zif8hbv6/e5c313eb-da71-45e8-a9b3-617dfb56dedf/t/1751767799952/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Ki 🦇🩸</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">4,200</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          9<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/4hgdcudy8qacri50yz8f75gt5w/84ed369d-532e-4dd8-8d69-adcf9a5af27c/t/1766257770339/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Genya Ryder420©️🦋🥑</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">4,020</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          10<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/nr5v72206bft012affr4s23za7/02f0a11a-1db7-4744-a025-309012ea7a6a/t/1767519448403/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name"> KUPO_404</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">3,980</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          11<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/db2f8q4egawnmhrjgiayg9m8a6/f7bd83db-8d5b-41dc-8511-101589f99de1/t/1770447634367/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">𐙚⋆.˚Shimo🍬🐑</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">1,680</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          12<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/6f9g20846dn6s5zbatu69841nz/855435dd-2719-46f1-aa2b-86592511447d/t/1767196212828/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Ton Otaku🌃❤️&zwj;🩹</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">1,260</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          13<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/au36m0bw8jzhh1pt3iav6afqu7/aa6f0592-e302-4f90-a6e6-d7eee1855e57/t/1767396544153/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">♤♡Jinx◇♧ ~PMK~</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">1,240</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          14<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/nig6n2nzqqdqadayw3jymr3viy/62c4bcef-5d42-4027-a474-34e1494fd5b6/t/1770170753354/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">🤍🌜✮⋆˙〚ꜱʜɪʀᴏ〛⊹ ࣪ ˖🌛🤍</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">800</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          14<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/ec11pz6qtazsene90duew1f8zy/53ccb97b-2ed9-474d-aa75-078b4f5c2414/t/1767675494371/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">😇0p.Von😈</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">800</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          16<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/d10m77t0tdfthnd9pi0ut3ebc5/4c18050e-a024-4f2a-81ca-8624efb7f227/t/1752271044324/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Áhiko_</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">600</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          17<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/g4i0mqqtzrh1cha11ajrd8pgrt/98006d87-55e5-4c04-a35d-f4281771398e/t/1770055118487/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Onyx Cherryglass</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">400</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          18<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/uudqb4aztjw9mzu29d22e262mt/e3d73095-dfd4-45bd-8702-160cde6aca09/t/1770424795856/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Lee Xu Young</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">360</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          18<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/7fe9m8eu6jnaahnuwpz2vh5na5/b3822a2e-8c78-41b3-9e74-f9d803b3474b/t/1749816868731/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">おもちゃダンス</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">360</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          20<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/z0z2r3h4iaadsc4vycq925uejy/a2163c71-8748-474b-bb59-2cbb764e6e5d/t/1769842275573/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">(&NoBreak;つFAPI♍🪽)&NoBreak;つ</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">170</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          21<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/c8visysbzq1acfgz85z684n0vt/8490417a-9262-42c9-805f-a21ecfb7dec0/t/1770343302460/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">🖤ghost Shadow💔</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">150</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          22<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/8c3bnthdabz7m6qju8vq2w22au/d0a81e12-77be-4127-b927-bd2a7c7503a3/t/1751936463976/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">❄💮ᛄᚩᚱᛗᚪᚸᚻ🪷❄🐉🪻</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">110</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          23<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/rgwyhivuybd3pj3vsm51yzyc9u/360d6fa2-05a0-4a61-8fb5-cfbda87507db/t/1769059845738/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">🌟🖤shixu-san💜🌟</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">100</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          23<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/i78t2z6rddwzdnb05hfwt2zs6w/6d9af4a8-6e96-4f7b-8c8b-60c4a580d9a4/t/1759378832117/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">✝️ #Maya Engarde 💙💛</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">100</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          23<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/5z2nthwjhjddmaq9h30t3s5puy/ca47e258-7f7d-48bb-b9b3-c9c4e275eaf7/t/1767942332178/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">stoner stitch 444🐺</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">100</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          26<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile/9pnr57g6rez8i64ub0rc8jf4qu/1682348223/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Господин Anes </p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">40</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          26<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/00ni16mmfaza9nna5t5z8p6h6t/367c9151-b025-4727-94cd-6766f351ec87/t/1742924712559/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">JayJay</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">40</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          28<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/zsprqz4etehqrvbst9v3iwq8fz/db4f70f8-8c3a-44f7-bf2c-8fbd83c2d68d/t/1769957758972/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">Fierin [甘い] 🥛</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">0</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          28<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/z9gwgcf99ewabfenzv4ardbn7t/a0397519-14cf-4659-8d8c-280e4fd07842/t/1762526632595/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">*•.¸♡𝐡𝐚𝐫𝐮↭ღ</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">0</span></p><!----></div></div></div></div><div data-v-4067e6a2="" data-v-e313257e="" class="rankingCell"><div data-v-4067e6a2="" class="mainComponent"><div data-v-4067e6a2="" class="rankWrap"><div data-v-4067e6a2="" class="rank"><p data-v-4067e6a2="" class="rank__normal">
+          28<span data-v-4067e6a2="">.º</span></p></div></div><div data-v-3fbeb308="" data-v-4067e6a2="" class="iconArea iconArea"><div data-v-3fbeb308="" class="iconWrap"><img data-v-4e6a01dc="" data-v-3fbeb308="" src="https://image-api.reality.wrightflyer.net/api/v1/image/profile-icon-slot/ry44gfyf2mzh9cnep07g64ceiu/4a1d5c08-0793-465d-84ff-02b17c6cd8ef/t/1766372122834/128" class="iconImg" style="width: 44px; height: 44px; border: 1px solid rgb(232, 232, 232);"></div><!----></div><div data-v-4067e6a2="" class="mainInformation"><div data-v-4067e6a2="" class="mainInformation__content"><p data-v-4067e6a2="" class="mainInformation__name">sparky 🩷💛🩵</p><p data-v-4067e6a2="" class="mainInformation__score"><span data-v-4067e6a2="">0</span></p><!----></div></div></div></div></div></div></div></div></div></div></div><div data-v-39a62f00="" class="overlay"><!----></div></div><!----></div></div> <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-136508263-1"></script> <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-136508263-1")</script> <script type="text/javascript" src="/js/chunk-vendors.e5778a7d.js"></script><script type="text/javascript" src="/js/chunk-common.7fd5a5de.js"></script><script type="text/javascript" src="/js/index.2425b620.js"></script>  <div></div><div id="compose-ai-general-snackbar-root"></div><div id="Chat-Plugin-Root" class="compose-root-component"></div><iframe name="__privateStripeMetricsController5350" frameborder="0" allowtransparency="true" scrolling="no" role="presentation" allow="payment *" src="https://js.stripe.com/v3/m-outer-3437aaddcdf6922d623e172c2d6f9278.html#url=https%3A%2F%2Freality.app%2Fevents%2F22509%3Fadj_t%3D66ds1vh_75goblm&amp;title=%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88&amp;referrer=&amp;muid=b7d05078-bcc2-42d1-8f75-657c0cabf47160bae1&amp;sid=ce856da8-5d58-47c1-bb2a-a3ebf1f71862e3057a&amp;version=6&amp;preview=false&amp;__shared_params__[version]=v3" aria-hidden="true" tabindex="-1" style="border: none !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important; user-select: none !important;"></iframe></body></html>
