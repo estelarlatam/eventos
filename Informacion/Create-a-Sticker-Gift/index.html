@@ -1290,7 +1290,7 @@
         // CONFIGURACIÓN - TU URL DE GOOGLE APPS SCRIPT
         // ==========================================
         
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZPt1N0w0pmtpXFY_M5DYSXshNkVc292VfaWju-NpJdaxwQSykdpFifUi_tG7UQcUdDw/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUvT9hiM3bJhoon1_BWYUVi7cPGBTbkrmgtfpBUgqk04JoTu4GkesfOklZfLZatvVJYw/exec';
         
         // ==========================================
         // VARIABLES GLOBALES
@@ -1319,25 +1319,19 @@
         });
 
         // ==========================================
-        // CARGAR PARTICIPANTES DESDE GOOGLE SHEETS
+        // CARGAR PARTICIPANTES DESDE GOOGLE SHEETS (JSONP)
         // ==========================================
 
-        async function cargarParticipantes() {
-            try {
-                // Agregar timestamp para evitar caché
-                const url = GOOGLE_SCRIPT_URL + '?action=getParticipants&evento=Create-a-Sticker-Gift&t=' + Date.now();
-                
-                const response = await fetch(url, {
-                    method: 'GET',
-                    mode: 'cors'
-                });
-                
-                const data = await response.json();
-                
+        function cargarParticipantes() {
+            const script = document.createElement('script');
+            const callbackName = 'handleParticipants_' + Date.now();
+            
+            // Crear función callback global temporal
+            window[callbackName] = function(data) {
                 if (data.success && data.participants) {
                     participantesData = data.participants;
                     
-                    // Ordenar por puntuación (descendente)
+                    // Ordenar por puntuación
                     participantesData.sort((a, b) => {
                         const scoreA = parseInt(a.score) || 0;
                         const scoreB = parseInt(b.score) || 0;
@@ -1355,11 +1349,28 @@
                         actualizarPosicionUsuario();
                     }
                 }
-            } catch (error) {
-                console.error('Error cargando participantes:', error);
-                // Si falla, intentar cargar desde localStorage como respaldo
-                cargarParticipantesLocal();
-            }
+                
+                // Limpiar
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.head.removeChild(script);
+                }
+            };
+            
+            // URL con callback
+            const url = GOOGLE_SCRIPT_URL + '?action=getParticipants&evento=Create-a-Sticker-Gift&callback=' + callbackName + '&t=' + Date.now();
+            
+            script.src = url;
+            script.onerror = function() {
+                console.error('Error cargando participantes');
+                cargarParticipantesLocal(); // Fallback
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.head.removeChild(script);
+                }
+            };
+            
+            document.head.appendChild(script);
         }
 
         function cargarParticipantesLocal() {
@@ -1438,10 +1449,9 @@
             const index = participantesData.findIndex(p => p.email === usuarioActual.email);
             if (index !== -1) {
                 const posicion = index + 1;
-                document.getElementById('user-position').textContent = posicion + 'th';
+                const positionEl = document.getElementById('user-position');
                 
                 // Agregar sufijo correcto
-                const positionEl = document.getElementById('user-position');
                 if (posicion === 1) positionEl.textContent = '1st';
                 else if (posicion === 2) positionEl.textContent = '2nd';
                 else if (posicion === 3) positionEl.textContent = '3rd';
