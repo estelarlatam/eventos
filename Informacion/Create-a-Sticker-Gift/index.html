@@ -1301,6 +1301,7 @@
         let eventoFinalizado = false;
         let usuarioActual = null;
         let uploadedImageBase64 = null;
+        let participantesData = []; // Almacena todos los participantes
 
         // ==========================================
         // INICIALIZACIÓN
@@ -1314,7 +1315,139 @@
             
             cargarDatosEvento();
             checkSavedSession();
+            cargarParticipantes(); // Cargar participantes al inicio
         });
+
+        // ==========================================
+        // CARGAR PARTICIPANTES DESDE GOOGLE SHEETS
+        // ==========================================
+
+        async function cargarParticipantes() {
+            try {
+                // Agregar timestamp para evitar caché
+                const url = GOOGLE_SCRIPT_URL + '?action=getParticipants&evento=Create-a-Sticker-Gift&t=' + Date.now();
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.participants) {
+                    participantesData = data.participants;
+                    
+                    // Ordenar por puntuación (descendente)
+                    participantesData.sort((a, b) => {
+                        const scoreA = parseInt(a.score) || 0;
+                        const scoreB = parseInt(b.score) || 0;
+                        return scoreB - scoreA;
+                    });
+                    
+                    // Actualizar contador
+                    document.getElementById('num-participantes').textContent = participantesData.length;
+                    
+                    // Renderizar rankings
+                    renderizarRankings();
+                    
+                    // Si hay usuario actual, actualizar su posición
+                    if (usuarioActual) {
+                        actualizarPosicionUsuario();
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando participantes:', error);
+                // Si falla, intentar cargar desde localStorage como respaldo
+                cargarParticipantesLocal();
+            }
+        }
+
+        function cargarParticipantesLocal() {
+            // Cargar desde localStorage como respaldo
+            const saved = localStorage.getItem('estelar_participants');
+            if (saved) {
+                try {
+                    participantesData = JSON.parse(saved);
+                    document.getElementById('num-participantes').textContent = participantesData.length;
+                    renderizarRankings();
+                } catch (e) {
+                    console.error('Error cargando participantes locales:', e);
+                }
+            }
+        }
+
+        function guardarParticipantesLocal() {
+            localStorage.setItem('estelar_participants', JSON.stringify(participantesData));
+        }
+
+        function renderizarRankings() {
+            const container = document.getElementById('ranking-list');
+            
+            if (participantesData.length === 0) {
+                container.innerHTML = `
+                    <div class="ranking-item" style="justify-content: center; padding: 2rem; color: #888;">
+                        No hay datos de clasificación disponibles
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            participantesData.forEach((participante, index) => {
+                const rank = index + 1;
+                const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+                const rankDisplay = rank <= 3 ? '' : rank;
+                
+                // Verificar si es el usuario actual
+                const esUsuarioActual = usuarioActual && participante.email === usuarioActual.email;
+                
+                // Si es el usuario actual, no mostrarlo en la lista general (ya tiene su propia tarjeta arriba)
+                if (esUsuarioActual) return;
+                
+                html += `
+                    <div class="ranking-item">
+                        <div class="rank-number ${rankClass}">${rankDisplay}</div>
+                        <div class="rank-avatar">
+                            ${participante.profileImage ? 
+                                `<img src="${participante.profileImage}" alt="${participante.username}">` : 
+                                participante.username.charAt(0).toUpperCase()
+                            }
+                        </div>
+                        <div class="rank-info">
+                            <div class="rank-name">
+                                <a href="${participante.profileLink || '#'}" target="_blank">${participante.username}</a>
+                            </div>
+                        </div>
+                        <div class="rank-score">${participante.score || 0}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html || `
+                <div class="ranking-item" style="justify-content: center; padding: 2rem; color: #888;">
+                    No hay otros participantes
+                </div>
+            `;
+        }
+
+        function actualizarPosicionUsuario() {
+            if (!usuarioActual) return;
+            
+            // Encontrar posición del usuario actual
+            const index = participantesData.findIndex(p => p.email === usuarioActual.email);
+            if (index !== -1) {
+                const posicion = index + 1;
+                document.getElementById('user-position').textContent = posicion + 'th';
+                
+                // Agregar sufijo correcto
+                const positionEl = document.getElementById('user-position');
+                if (posicion === 1) positionEl.textContent = '1st';
+                else if (posicion === 2) positionEl.textContent = '2nd';
+                else if (posicion === 3) positionEl.textContent = '3rd';
+                else positionEl.textContent = posicion + 'th';
+            }
+        }
 
         // ==========================================
         // MANEJO DE IMÁGENES
@@ -1375,7 +1508,7 @@
         }
 
         function actualizarUI(data) {
-            document.getElementById('num-participantes').textContent = data.participantes || 0;
+            // No actualizamos el contador aquí, lo hacemos en cargarParticipantes()
             
             const fechaInicio = new Date(data.fecha_inicio);
             const fechaFinEvento = new Date(data.fecha_fin);
@@ -1412,7 +1545,7 @@
         }
 
         function usarDatosPorDefecto() {
-            document.getElementById('num-participantes').textContent = '0';
+            // No actualizamos el contador aquí
             
             const fechaInicio = new Date('2026-02-06T12:00:00');
             const fechaFinEvento = new Date('2026-02-08T06:00:00');
@@ -1538,6 +1671,9 @@
                 const avatar = document.getElementById('user-avatar');
                 avatar.innerHTML = `<img src="${usuarioActual.profileImage}" alt="Avatar">`;
             }
+            
+            // Actualizar posición del usuario
+            actualizarPosicionUsuario();
         }
 
         function handleMainAction() {
@@ -1626,7 +1762,8 @@
                     username: username,
                     email: email,
                     profileLink: profile,
-                    profileImage: uploadedImageBase64 || '', // Imagen en base64
+                    profileImage: uploadedImageBase64 || '',
+                    score: 0,
                     fechaUnion: new Date().toISOString()
                 };
                 
@@ -1644,14 +1781,19 @@
                 usuarioActual = datos;
                 saveSession(datos);
                 
+                // Agregar a la lista local y reordenar
+                participantesData.push(datos);
+                participantesData.sort((a, b) => (b.score || 0) - (a.score || 0));
+                guardarParticipantesLocal();
+                
                 // Actualizar UI
                 closeModals();
                 showSuccess('¡Registro Exitoso!', 'Te has unido al evento correctamente. ¡Buena suerte!');
                 showEnteredState();
+                renderizarRankings();
                 
-                // Incrementar contador local
-                const current = parseInt(document.getElementById('num-participantes').textContent);
-                document.getElementById('num-participantes').textContent = current + 1;
+                // Actualizar contador
+                document.getElementById('num-participantes').textContent = participantesData.length;
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -1696,6 +1838,10 @@
                     body: JSON.stringify(datos)
                 });
                 
+                // Eliminar de la lista local
+                participantesData = participantesData.filter(p => p.email !== usuarioActual.email);
+                guardarParticipantesLocal();
+                
                 clearSession();
                 
                 const container = document.getElementById('button-container');
@@ -1703,8 +1849,11 @@
                 
                 document.getElementById('user-ranking').style.display = 'none';
                 
-                const current = parseInt(document.getElementById('num-participantes').textContent);
-                document.getElementById('num-participantes').textContent = Math.max(0, current - 1);
+                // Actualizar contador
+                document.getElementById('num-participantes').textContent = participantesData.length;
+                
+                // Re-renderizar rankings
+                renderizarRankings();
                 
                 closeModals();
                 showSuccess('Salida Exitosa', 'Has salido del evento correctamente.');
@@ -1768,6 +1917,9 @@
                 }
             });
         });
+
+        // Recargar participantes cada 30 segundos para mantener actualizado
+        setInterval(cargarParticipantes, 30000);
     </script>
 
 </body>
