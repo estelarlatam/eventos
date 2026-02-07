@@ -72,6 +72,48 @@
             color: #2d3436;
         }
 
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            color: #636e72;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ff6b6b;
+        }
+
+        .error-container button {
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
         /* Tabs */
         .tabs-container {
             background: white;
@@ -222,7 +264,6 @@
             width: 100%;
             position: relative;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            /* Aspect ratio 3:1 para mantener proporción consistente */
             aspect-ratio: 3 / 1;
             min-height: 140px;
             display: flex;
@@ -231,7 +272,6 @@
             overflow: hidden;
         }
 
-        /* Fallback para navegadores que no soportan aspect-ratio */
         @supports not (aspect-ratio: 3 / 1) {
             .event-banner-container {
                 height: 140px;
@@ -241,11 +281,11 @@
         .event-banner {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Muestra la imagen completa sin recortar */
+            object-fit: contain;
             object-position: center;
             display: block;
             transition: transform 0.3s ease;
-            background-color: #f0f0f0; /* Fondo por si la imagen tiene transparencia */
+            background-color: #f0f0f0;
         }
 
         .event-card:hover .event-banner {
@@ -321,7 +361,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-variant-numeric: tabular-nums; /* Números monoespaciados para evitar saltos */
+            font-variant-numeric: tabular-nums;
         }
 
         .event-time.ended {
@@ -345,7 +385,7 @@
             }
             
             .event-banner-container {
-                aspect-ratio: 16 / 9; /* Más alto en móvil para mejor visualización */
+                aspect-ratio: 16 / 9;
                 min-height: 160px;
             }
         }
@@ -375,134 +415,109 @@
             <h1>Eventos</h1>
         </header>
 
-        <!-- Tabs -->
-        <div class="tabs-container">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('current', this)">En curso</button>
-                <button class="tab" onclick="switchTab('upcoming', this)">próximos</button>
-                <button class="tab" onclick="switchTab('ended', this)">Terminado</button>
-            </div>
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Cargando eventos...</p>
         </div>
 
-        <!-- Filter -->
-        <div class="filter-section">
-            <div class="dropdown">
-                <span>Todos los Eventos</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                </svg>
-            </div>
+        <!-- Error State -->
+        <div id="errorState" class="error-container" style="display: none;">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <h3>Error al cargar eventos</h3>
+            <p>No se pudieron cargar los eventos. Verifica tu conexión.</p>
+            <button onclick="loadEvents()">Reintentar</button>
         </div>
 
-        <!-- Tab Content: En curso -->
-        <div id="current" class="content-section active">
-            <h2 class="section-title">Eventos que estoy inscrito</h2>
-            <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <p>Sin eventos en curso</p>
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('current', this)">En curso</button>
+                    <button class="tab" onclick="switchTab('upcoming', this)">próximos</button>
+                    <button class="tab" onclick="switchTab('ended', this)">Terminado</button>
+                </div>
             </div>
 
-            <h2 class="section-title">Eventos Elegibles para Participar</h2>
-            <div class="events-grid" id="currentEvents">
-                <!-- Eventos se cargarán dinámicamente -->
-            </div>
-        </div>
-
-        <!-- Tab Content: Próximos -->
-        <div id="upcoming" class="content-section">
-            <h2 class="section-title">Eventos Preinscrito</h2>
-            <div class="empty-state">
-                <div class="empty-icon">📅</div>
-                <p>Sin eventos programados</p>
+            <!-- Filter -->
+            <div class="filter-section">
+                <div class="dropdown">
+                    <span>Todos los Eventos</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </div>
             </div>
 
-            <h2 class="section-title">Eventos Elegibles para Preinscripción</h2>
-            <div class="events-grid" id="upcomingEvents">
-                <!-- Eventos se cargarán dinámicamente -->
-            </div>
-        </div>
+            <!-- Tab Content: En curso -->
+            <div id="current" class="content-section active">
+                <h2 class="section-title">Eventos que estoy inscrito</h2>
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>Sin eventos en curso</p>
+                </div>
 
-        <!-- Tab Content: Terminado -->
-        <div id="ended" class="content-section">
-            <div class="events-grid" id="endedEvents" style="margin-top: 20px;">
-                <!-- Eventos se cargarán dinámicamente -->
+                <h2 class="section-title">Eventos Elegibles para Participar</h2>
+                <div class="events-grid" id="currentEvents">
+                    <!-- Eventos se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Próximos -->
+            <div id="upcoming" class="content-section">
+                <h2 class="section-title">Eventos Preinscrito</h2>
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <p>Sin eventos programados</p>
+                </div>
+
+                <h2 class="section-title">Eventos Elegibles para Preinscripción</h2>
+                <div class="events-grid" id="upcomingEvents">
+                    <!-- Eventos se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Terminado -->
+            <div id="ended" class="content-section">
+                <div class="events-grid" id="endedEvents" style="margin-top: 20px;">
+                    <!-- Eventos se cargarán dinámicamente -->
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuración de GitHub
-        const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/estelarlatam/eventos/main';
-        const GITHUB_INFO_URL = 'https://github.com/estelarlatam/eventos/tree/main/Informacion';
-
-        // Datos de eventos con fechas de finalización (ISO 8601)
-        const eventsData = {
-            current: [
-                {
-                    id: 'sticker',
-                    title: 'Create a Sticker Gift',
-                    image: 'Imagenes/Eventos/En-curso/Create-a-Sticker-Gift.png',
-                    participants: 47,
-                    endDate: '2025-02-10T23:59:59', // Fecha de finalización
-                    ended: false
-                },
-                {
-                    id: 'gacha',
-                    title: 'Win Gacha Tickets',
-                    image: 'Imagenes/Eventos/En-curso/Win-Gacha-Tickets.png',
-                    participants: 593,
-                    endDate: '2025-02-09T18:30:00',
-                    ended: false
-                }
-            ],
-            upcoming: [
-                {
-                    id: 'super',
-                    title: 'Super Event',
-                    image: 'Imagenes/Eventos/Proximos/Super-Event.png',
-                    participants: 23,
-                    endDate: '2025-02-16T06:00:00',
-                    ended: false
-                },
-                {
-                    id: 'drip',
-                    title: 'Choose Your Drip',
-                    image: 'Imagenes/Eventos/Proximos/Choose-Your-Drip.png',
-                    participants: 70,
-                    endDate: '2025-02-16T06:00:00',
-                    ended: false
-                }
-            ],
-            ended: [
-                {
-                    id: 'tee',
-                    title: 'Your avatar printed on a Tee',
-                    image: 'Imagenes/Eventos/Terminados/Avatar-Tee.png',
-                    participants: 86,
-                    endDate: '2025-02-02T06:00:00', // Ya pasó
-                    ended: true
-                },
-                {
-                    id: 'standout',
-                    title: 'Stand Out Dare to Shine',
-                    image: 'Imagenes/Eventos/Terminados/Stand-Out.png',
-                    participants: 502,
-                    endDate: '2025-02-02T06:00:00',
-                    ended: true
-                },
-                {
-                    id: 'debut',
-                    title: 'Debut Grand Prix',
-                    image: 'Imagenes/Eventos/Terminados/Debut-Grand-Prix.png',
-                    participants: 36,
-                    endDate: '2025-02-02T06:00:00',
-                    ended: true
-                }
-            ]
-        };
-
-        // Almacenar referencias a los elementos del contador para actualizarlos
+        // URL del JSON de eventos
+        const JSON_URL = 'https://raw.githubusercontent.com/estelarlatam/eventos/main/lista-de-eventos.json';
+        
+        // Almacenar referencias a los elementos del contador
         const countdownElements = new Map();
+        let countdownInterval = null;
+
+        // Función para determinar el estado del evento basado en fechas
+        function determineEventState(event) {
+            // Si el campo estado está presente y es válido, usarlo
+            if (event.estado) {
+                const estado = event.estado.toLowerCase().trim();
+                if (estado === 'en curso') return 'current';
+                if (estado === 'proximos' || estado === 'próximos') return 'upcoming';
+                if (estado === 'terminado') return 'ended';
+            }
+
+            // Si no hay estado o es inválido, calcular por fechas
+            const now = new Date();
+            const startDate = new Date(event.fecha_inicio);
+            const endDate = new Date(event.fecha_fin);
+
+            if (now < startDate) {
+                return 'upcoming'; // Aún no comienza
+            } else if (now >= startDate && now <= endDate) {
+                return 'current'; // En curso
+            } else {
+                return 'ended'; // Finalizado
+            }
+        }
 
         // Función para calcular tiempo restante
         function calculateTimeRemaining(endDate) {
@@ -511,7 +526,7 @@
             const difference = end - now;
 
             if (difference <= 0) {
-                return null; // Tiempo agotado
+                return null;
             }
 
             const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -541,12 +556,11 @@
                 const event = findEventById(eventId);
                 if (!event) return;
 
-                const timeRemaining = calculateTimeRemaining(event.endDate);
+                const timeRemaining = calculateTimeRemaining(event.fecha_fin);
                 const timeString = formatCountdown(timeRemaining);
                 
                 element.textContent = timeString;
                 
-                // Cambiar estilo si finalizó
                 if (!timeRemaining) {
                     element.classList.add('finished');
                     element.classList.remove('ended');
@@ -554,63 +568,124 @@
             });
         }
 
-        // Buscar evento por ID en todas las categorías
+        // Buscar evento por ID (título normalizado)
         function findEventById(id) {
-            for (const category in eventsData) {
-                const event = eventsData[category].find(e => e.id === id);
-                if (event) return event;
+            // Buscar en todos los eventos cargados
+            const allEvents = [...eventsData.current, ...eventsData.upcoming, ...eventsData.ended];
+            return allEvents.find(e => normalizeId(e.titulo) === id);
+        }
+
+        // Normalizar ID (crear slug único)
+        function normalizeId(title) {
+            return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+        }
+
+        // Variable global para almacenar eventos clasificados
+        let eventsData = {
+            current: [],
+            upcoming: [],
+            ended: []
+        };
+
+        // Función para cargar eventos desde JSON
+        async function loadEvents() {
+            // Mostrar loading
+            document.getElementById('loadingState').style.display = 'flex';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+
+            try {
+                // Agregar timestamp para evitar caché
+                const url = `${JSON_URL}?t=${Date.now()}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const events = await response.json();
+                
+                // Validar que sea un array
+                if (!Array.isArray(events)) {
+                    throw new Error('El JSON no contiene un array de eventos');
+                }
+
+                // Clasificar eventos
+                classifyEvents(events);
+                
+                // Renderizar eventos
+                renderAllEvents();
+                
+                // Mostrar contenido principal
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Iniciar contadores
+                startCountdowns();
+                
+            } catch (error) {
+                console.error('Error cargando eventos:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'block';
             }
-            return null;
         }
 
-        // Función para generar slug de URL
-        function generateSlug(title) {
-            return title.replace(/\s+/g, '-');
-        }
+        // Función para clasificar eventos
+        function classifyEvents(events) {
+            // Limpiar datos anteriores
+            eventsData = {
+                current: [],
+                upcoming: [],
+                ended: []
+            };
 
-        // Función para generar URL de información del evento
-        function generateEventURL(title) {
-            const slug = generateSlug(title);
-            return `${GITHUB_INFO_URL}/${slug}`;
-        }
+            events.forEach(event => {
+                const state = determineEventState(event);
+                
+                // Agregar ID único al evento
+                event.id = normalizeId(event.titulo);
+                
+                eventsData[state].push(event);
+            });
 
-        // Función para generar URL de imagen RAW de GitHub
-        function generateImageURL(imagePath) {
-            return `${GITHUB_RAW_URL}/${imagePath}`;
+            console.log('Eventos clasificados:', {
+                current: eventsData.current.length,
+                upcoming: eventsData.upcoming.length,
+                ended: eventsData.ended.length
+            });
         }
 
         // Función para crear tarjeta de evento
-        function createEventCard(event, category) {
-            const imageUrl = generateImageURL(event.image);
-            const eventUrl = generateEventURL(event.title);
-            const timeClass = event.ended ? 'ended' : '';
+        function createEventCard(event) {
+            const timeClass = determineEventState(event) === 'ended' ? 'ended' : '';
             
             const card = document.createElement('a');
             card.className = 'event-card';
-            card.href = eventUrl;
+            card.href = event.link;
             card.target = '_blank';
             card.rel = 'noopener noreferrer';
-            card.dataset.eventId = event.id; // Guardar ID para referencia
+            card.dataset.eventId = event.id;
             
             // Calcular tiempo inicial
-            const initialTime = calculateTimeRemaining(event.endDate);
+            const initialTime = calculateTimeRemaining(event.fecha_fin);
             const initialTimeString = formatCountdown(initialTime);
             
             card.innerHTML = `
                 <div class="event-banner-container loading">
                     <img 
-                        src="${imageUrl}" 
-                        alt="${event.title}" 
+                        src="${event.imagen}" 
+                        alt="${event.titulo}" 
                         class="event-banner"
                         onload="this.parentElement.classList.remove('loading')"
-                        onerror="handleImageError(this, '${event.title}')"
+                        onerror="handleImageError(this, '${event.titulo}')"
                         loading="lazy"
                     >
                 </div>
                 <div class="event-info">
                     <div class="event-stats">
                         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        <span>${event.participants}</span>
+                        <span>${event.participantes || 0}</span>
                     </div>
                     <div class="event-time ${timeClass}" data-countdown="${event.id}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -625,13 +700,54 @@
             const countdownElement = card.querySelector('.countdown-text');
             countdownElements.set(event.id, countdownElement);
             
-            // Prevenir comportamiento por defecto y abrir en nueva pestaña
+            // Prevenir comportamiento por defecto
             card.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.open(eventUrl, '_blank');
+                window.open(event.link, '_blank');
             });
             
             return card;
+        }
+
+        // Función para renderizar todos los eventos
+        function renderAllEvents() {
+            // Limpiar contenedores
+            document.getElementById('currentEvents').innerHTML = '';
+            document.getElementById('upcomingEvents').innerHTML = '';
+            document.getElementById('endedEvents').innerHTML = '';
+            
+            // Limpiar referencias de contadores
+            countdownElements.clear();
+            
+            // Renderizar En curso
+            const currentContainer = document.getElementById('currentEvents');
+            if (eventsData.current.length === 0) {
+                currentContainer.innerHTML = '<div class="empty-state"><p>No hay eventos disponibles</p></div>';
+            } else {
+                eventsData.current.forEach(event => {
+                    currentContainer.appendChild(createEventCard(event));
+                });
+            }
+            
+            // Renderizar Próximos
+            const upcomingContainer = document.getElementById('upcomingEvents');
+            if (eventsData.upcoming.length === 0) {
+                upcomingContainer.innerHTML = '<div class="empty-state"><p>No hay eventos programados</p></div>';
+            } else {
+                eventsData.upcoming.forEach(event => {
+                    upcomingContainer.appendChild(createEventCard(event));
+                });
+            }
+            
+            // Renderizar Terminados
+            const endedContainer = document.getElementById('endedEvents');
+            if (eventsData.ended.length === 0) {
+                endedContainer.innerHTML = '<div class="empty-state" style="margin-top: 20px;"><p>No hay eventos finalizados</p></div>';
+            } else {
+                eventsData.ended.forEach(event => {
+                    endedContainer.appendChild(createEventCard(event));
+                });
+            }
         }
 
         // Manejador de errores de imagen
@@ -643,67 +759,55 @@
                 <div class="image-error">
                     <div>
                         <div style="font-size: 24px; margin-bottom: 5px;">🖼️</div>
-                        <div>Imagen no encontrada</div>
+                        <div>Imagen no disponible</div>
                         <div style="font-size: 11px; margin-top: 5px; opacity: 0.8;">${title}</div>
                     </div>
                 </div>
             `;
         }
 
-        // Función para renderizar eventos
-        function renderEvents() {
-            // Renderizar eventos en curso
-            const currentContainer = document.getElementById('currentEvents');
-            eventsData.current.forEach(event => {
-                currentContainer.appendChild(createEventCard(event, 'current'));
-            });
+        // Iniciar contadores
+        function startCountdowns() {
+            // Limpiar intervalo anterior si existe
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
             
-            // Renderizar eventos próximos
-            const upcomingContainer = document.getElementById('upcomingEvents');
-            eventsData.upcoming.forEach(event => {
-                upcomingContainer.appendChild(createEventCard(event, 'upcoming'));
-            });
+            // Actualizar inmediatamente
+            updateAllCountdowns();
             
-            // Renderizar eventos terminados
-            const endedContainer = document.getElementById('endedEvents');
-            eventsData.ended.forEach(event => {
-                endedContainer.appendChild(createEventCard(event, 'ended'));
-            });
+            // Actualizar cada segundo
+            countdownInterval = setInterval(updateAllCountdowns, 1000);
         }
 
         // Tab Switching
         function switchTab(tabName, element) {
-            // Update tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             element.classList.add('active');
 
-            // Update content
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(tabName).classList.add('active');
         }
 
-        // Inicializar al cargar la página
+        // Cargar eventos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
-            renderEvents();
-            
-            // Iniciar el contador global que actualiza cada segundo
-            setInterval(updateAllCountdowns, 1000);
-            
-            // Actualización inmediata para evitar delay inicial
-            updateAllCountdowns();
+            loadEvents();
         });
 
-        // Touch feedback para móvil
-        document.addEventListener('touchstart', function() {}, {passive: true});
-        
-        // Limpiar intervalos al salir de la página (buena práctica)
-        window.addEventListener('beforeunload', function() {
-            // Los intervalos se limpian automáticamente al cerrar la página
+        // Recargar al volver a la página (para datos actualizados)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // Opcional: recargar automáticamente al volver
+                // loadEvents();
+            }
         });
+
+        // Touch feedback
+        document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
 </body>
 </html>
