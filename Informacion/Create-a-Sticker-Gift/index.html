@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E??%3C/text%3E%3C/svg%3E" sizes="32x32">
+    
+    <title>Eventos Reality - Plataforma de Eventos Virtuales</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #ec4899;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-elevated: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.1) 0%, transparent 40%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 15, 35, 0.8);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            -webkit-text-fill-color: initial;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 6rem 2rem 4rem;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Event Grid */
+        .events-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 12px;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Event Card */
+        .event-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 180px;
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-image::after {
+            content: '??';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+
+        .event-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .event-status.live {
+            background: rgba(239, 68, 68, 0.9);
+            animation: live-pulse 2s infinite;
+        }
+
+        @keyframes live-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        .event-content {
+            padding: 1.5rem;
+        }
+
+        .event-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .event-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .event-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .event-attendees {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .attendee-avatars {
+            display: flex;
+            margin-left: 0.5rem;
+        }
+
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            border: 2px solid var(--bg-card);
+            margin-left: -8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .avatar:first-child {
+            margin-left: 0;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 4rem 2rem;
+            margin: 4rem 0;
+        }
+
+        .stats-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+            display: inline-flex;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .footer-links h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-card);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hero {
+                padding: 4rem 1.5rem;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-elevated);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">??</div>
+                Reality
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMenu()">?</button>
+            
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#eventos">Eventos</a></li>
+                    <li><a href="#comunidad">Comunidad</a></li>
+                    <li><a href="#precios">Precios</a></li>
+                </ul>
+            </nav>
+            
+            <button class="btn-primary">Comenzar Ahora</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="hero-badge">
+            <span>??</span>
+            <span>+500 eventos este mes</span>
+        </div>
+        
+        <h1>Descubre Eventos Virtuales Incre¨ªbles</h1>
+        
+        <p>
+            Conecta con personas de todo el mundo en experiencias inmersivas. 
+            Desde conciertos hasta conferencias, todo en un solo lugar.
+        </p>
+        
+        <div class="hero-cta">
+            <button class="btn-primary">Explorar Eventos</button>
+            <button class="btn-secondary">Crear Evento</button>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>50K+</h3>
+                <p>Usuarios Activos</p>
+            </div>
+            <div class="stat-item">
+                <h3>1,200+</h3>
+                <p>Eventos Realizados</p>
+            </div>
+            <div class="stat-item">
+                <h3>98%</h3>
+                <p>Satisfacci¨®n</p>
+            </div>
+            <div class="stat-item">
+                <h3>150+</h3>
+                <p>Pa¨ªses</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events-section" id="eventos">
+        <div class="section-header">
+            <h2 class="section-title">Pr¨®ximos Eventos</h2>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active">Todos</button>
+                <button class="filter-tab">M¨²sica</button>
+                <button class="filter-tab">Arte</button>
+                <button class="filter-tab">Tech</button>
+                <button class="filter-tab">Negocios</button>
+            </div>
+        </div>
+
+        <div class="events-grid">
+            <!-- Event Card 1 -->
+            <article class="event-card">
+                <div class="event-image">
+                    <span class="event-status live">En Vivo</span>
+                </div>
+                <div class="event-content">
+                    <div class="event-date">
+                        <span>??</span>
+                        <span>Hoy, 20:00 CET</span>
+                    </div>
+                    <h3 class="event-title">Concierto Virtual: Synthwave Nights</h3>
+                    <p class="event-description">
+                        Sum¨¦rgete en una experiencia musical inmersiva con los mejores artistas de synthwave internacional.
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-attendees">
+                            <div class="attendee-avatars">
+                                <div class="avatar">A</div>
+                                <div class="avatar">B</div>
+                                <div class="avatar">C</div>
+                            </div>
+                            <span>+2.4k asistentes</span>
+                        </div>
+                        <span style="color: var(--primary-color); font-weight: 600;">Gratis</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Event Card 2 -->
+            <article class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
+                    <span class="event-status">Pr¨®ximo</span>
+                </div>
+                <div class="event-content">
+                    <div class="event-date">
+                        <span>??</span>
+                        <span>Ma?ana, 18:00 CET</span>
+                    </div>
+                    <h3 class="event-title">Workshop: Dise?o UI/UX Avanzado</h3>
+                    <p class="event-description">
+                        Aprende las ¨²ltimas tendencias en dise?o de interfaces con expertos de la industria tecnol¨®gica.
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-attendees">
+                            <div class="attendee-avatars">
+                                <div class="avatar">D</div>
+                                <div class="avatar">E</div>
+                            </div>
+                            <span>+850 asistentes</span>
+                        </div>
+                        <span style="color: var(--primary-color); font-weight: 600;">€25</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Event Card 3 -->
+            <article class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
+                    <span class="event-status">Pr¨®ximo</span>
+                </div>
+                <div class="event-content">
+                    <div class="event-date">
+                        <span>??</span>
+                        <span>15 Feb, 16:00 CET</span>
+                    </div>
+                    <h3 class="event-title">Startup Pitch: Demo Day Virtual</h3>
+                    <p class="event-description">
+                        Las startups m¨¢s innovadoras presentan sus proyectos a inversores internacionales en tiempo real.
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-attendees">
+                            <div class="attendee-avatars">
+                                <div class="avatar">F</div>
+                                <div class="avatar">G</div>
+                                <div class="avatar">H</div>
+                            </div>
+                            <span>+5k asistentes</span>
+                        </div>
+                        <span style="color: var(--primary-color); font-weight: 600;">Gratis</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Event Card 4 -->
+            <article class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
+                    <span class="event-status">Pr¨®ximo</span>
+                </div>
+                <div class="event-content">
+                    <div class="event-date">
+                        <span>??</span>
+                        <span>18 Feb, 19:30 CET</span>
+                    </div>
+                    <h3 class="event-title">Galer¨ªa de Arte Digital 3D</h3>
+                    <p class="event-description">
+                        Recorrido virtual por una exposici¨®n de arte digital e NFTs con realidad aumentada.
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-attendees">
+                            <div class="attendee-avatars">
+                                <div class="avatar">I</div>
+                                <div class="avatar">J</div>
+                            </div>
+                            <span>+1.2k asistentes</span>
+                        </div>
+                        <span style="color: var(--primary-color); font-weight: 600;">€10</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Event Card 5 -->
+            <article class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                    <span class="event-status">Pr¨®ximo</span>
+                </div>
+                <div class="event-content">
+                    <div class="event-date">
+                        <span>??</span>
+                        <span>20 Feb, 14:00 CET</span>
+                    </div>
+                    <h3 class="event-title">Conferencia: El Futuro del Trabajo</h3>
+                    <p class="event-description">
+                        Expertos en RRHH y tecnolog¨ªa discuten las tendencias laborales del pr¨®ximo decenio.
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-attendees">
+                            <div class="attendee-avatars">
+                                <div class="avatar">K</div>
+                                <div class="avatar">L</div>
+                                <div class="avatar">M</div>
+                            </div>
+                            <span>+3.5k asistentes</span>
+                        </div>
+                        <span style="color: var(--primary-color); font-weight: 600;">Gratis</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Event Card 6 -->
+            <article class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);">
+                    <span class="event-status">Pr¨®ximo</span>
+                </div>
+                <div class="event-content">
+                    <div class="event-date">
+                        <span>??</span>
+                        <span>22 Feb, 21:00 CET</span>
+                    </div>
+                    <h3 class="event-title">Stand-up Comedy: Noche de Risas</h3>
+                    <p class="event-description">
+                        Los mejores comediantes hispanohablantes en un show exclusivo de comedia en vivo.
+                    </p>
+                    <div class="event-footer">
+                        <div class="event-attendees">
+                            <div class="attendee-avatars">
+                                <div class="avatar">N</div>
+                                <div class="avatar">O</div>
+                            </div>
+                            <span>+900 asistentes</span>
+                        </div>
+                        <span style="color: var(--primary-color); font-weight: 600;">€15</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <div class="logo-icon">??</div>
+                    Reality
+                </a>
+                <p>
+                    La plataforma l¨ªder en eventos virtuales. Conectamos personas 
+                    a trav¨¦s de experiencias digitales inolvidables desde 2020.
+                </p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Plataforma</h4>
+                <ul>
+                    <li><a href="#">Eventos</a></li>
+                    <li><a href="#">Crear Evento</a></li>
+                    <li><a href="#">Precios</a></li>
+                    <li><a href="#">API</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Compa?¨ªa</h4>
+                <ul>
+                    <li><a href="#">Sobre Nosotros</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Carreras</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">T¨¦rminos</a></li>
+                    <li><a href="#">Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Reality Events. Todos los derechos reservados.</p>
+            
+            <div class="social-links">
+                <a href="#" title="Twitter">??</a>
+                <a href="#" title="Instagram">??</a>
+                <a href="#" title="Discord">??</a>
+                <a href="#" title="YouTube">??</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Filter Tabs
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                header.style.background = 'rgba(15, 15, 35, 0.95)';
+            } else {
+                header.style.background = 'rgba(15, 15, 35, 0.8)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Add interaction to event cards
+        document.querySelectorAll('.event-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Aqu¨ª puedes agregar la navegaci¨®n a detalle del evento
+                console.log('Evento seleccionado');
+            });
+        });
+    </script>
+</body>
+</html>
