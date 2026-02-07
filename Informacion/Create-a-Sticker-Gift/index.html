@@ -447,6 +447,7 @@
             font-weight: 700;
             font-size: 1.5rem;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .user-avatar img {
@@ -457,6 +458,7 @@
 
         .user-info {
             flex: 1;
+            min-width: 0;
         }
 
         .user-name {
@@ -466,6 +468,16 @@
             display: flex;
             align-items: center;
             gap: 0.25rem;
+        }
+
+        .user-name a {
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-name a:hover {
+            color: #7c7fd6;
+            text-decoration: underline;
         }
 
         .verified-badge {
@@ -552,6 +564,16 @@
             text-overflow: ellipsis;
         }
 
+        .rank-name a {
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .rank-name a:hover {
+            color: #7c7fd6;
+            text-decoration: underline;
+        }
+
         .rank-score {
             color: #3498db;
             font-weight: 700;
@@ -595,6 +617,73 @@
             font-size: 0.8rem;
             color: #888;
             margin-top: 0.25rem;
+        }
+
+        /* Image Upload Styles */
+        .image-upload-container {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .image-upload-container:hover {
+            border-color: #7c7fd6;
+            background: #f0f0ff;
+        }
+
+        .image-upload-container.has-image {
+            border-style: solid;
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .image-upload-input {
+            display: none;
+        }
+
+        .image-upload-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            display: none;
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .image-upload-preview.active {
+            display: block;
+        }
+
+        .image-upload-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .image-upload-text .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .image-upload-change {
+            color: #7c7fd6;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .image-upload-container.has-image .image-upload-change {
+            display: block;
+        }
+
+        .image-upload-container.has-image .image-upload-text {
+            display: none;
         }
 
         /* Button States */
@@ -765,6 +854,11 @@
             background: #1976d2;
         }
 
+        .btn-ok-full:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         /* Loading Spinner */
         .spinner {
             display: inline-block;
@@ -840,7 +934,6 @@
             }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -1092,7 +1185,7 @@
                 </div>
                 <div class="user-info">
                     <div class="user-name">
-                        <span id="user-name-display">--</span>
+                        <a href="#" id="user-profile-link" target="_blank"><span id="user-name-display">--</span></a>
                         <span class="verified-badge">✓</span>
                     </div>
                     <div class="user-score" id="user-score">0</div>
@@ -1130,6 +1223,21 @@
             <div class="modal-title">Únete al Evento</div>
             <div id="register-error"></div>
             
+            <!-- Foto de Perfil -->
+            <div class="form-group">
+                <label class="form-label">Foto de Perfil (Opcional)</label>
+                <div class="image-upload-container" onclick="document.getElementById('reg-image').click()">
+                    <input type="file" class="image-upload-input" id="reg-image" accept="image/*" onchange="handleImageUpload(this)">
+                    <img class="image-upload-preview" id="image-preview" alt="Preview">
+                    <div class="image-upload-text">
+                        <span class="icon">📷</span>
+                        Toca para subir una foto
+                    </div>
+                    <div class="image-upload-change">Toca para cambiar la foto</div>
+                </div>
+                <div class="form-hint">Formatos: JPG, PNG. Máximo 2MB</div>
+            </div>
+
             <div class="form-group">
                 <label class="form-label">Nombre de Usuario *</label>
                 <input type="text" class="form-input" id="reg-username" placeholder="Tu nombre de usuario" required>
@@ -1192,24 +1300,59 @@
         let fechaFin = null;
         let eventoFinalizado = false;
         let usuarioActual = null;
+        let uploadedImageBase64 = null;
 
         // ==========================================
         // INICIALIZACIÓN
         // ==========================================
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Abrir primer acordeón
             const firstAccordion = document.querySelector('.accordion-item.active .accordion-content');
             if (firstAccordion) {
                 firstAccordion.style.maxHeight = firstAccordion.scrollHeight + "px";
             }
             
-            // Cargar datos del evento
             cargarDatosEvento();
-            
-            // Verificar sesión guardada
             checkSavedSession();
         });
+
+        // ==========================================
+        // MANEJO DE IMÁGENES
+        // ==========================================
+
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // Validar tamaño (máximo 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showError('La imagen es demasiado grande. Máximo 2MB.');
+                input.value = '';
+                return;
+            }
+            
+            // Validar tipo
+            if (!file.type.startsWith('image/')) {
+                showError('Por favor selecciona un archivo de imagen válido.');
+                input.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImageBase64 = e.target.result;
+                
+                // Mostrar preview
+                const preview = document.getElementById('image-preview');
+                preview.src = uploadedImageBase64;
+                preview.classList.add('active');
+                
+                // Actualizar UI del contenedor
+                const container = document.querySelector('.image-upload-container');
+                container.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        }
 
         // ==========================================
         // CARGA DE DATOS
@@ -1380,13 +1523,35 @@
                 <button class="btn-leave" onclick="showLeaveModal()">Salir</button>
             `;
             
+            // Mostrar en rankings con imagen y link
             document.getElementById('user-ranking').style.display = 'flex';
             document.getElementById('user-name-display').textContent = usuarioActual.username || 'Usuario';
+            
+            // Actualizar link del perfil
+            const profileLink = document.getElementById('user-profile-link');
+            if (usuarioActual.profileLink) {
+                profileLink.href = usuarioActual.profileLink;
+            }
+            
+            // Actualizar imagen si existe
+            if (usuarioActual.profileImage) {
+                const avatar = document.getElementById('user-avatar');
+                avatar.innerHTML = `<img src="${usuarioActual.profileImage}" alt="Avatar">`;
+            }
         }
 
         function handleMainAction() {
             if (eventoFinalizado) return;
             if (usuarioActual) return;
+            
+            // Resetear formulario
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-email').value = '';
+            document.getElementById('reg-profile').value = '';
+            document.getElementById('reg-image').value = '';
+            document.getElementById('image-preview').classList.remove('active');
+            document.querySelector('.image-upload-container').classList.remove('has-image');
+            uploadedImageBase64 = null;
             
             showRegisterModal();
         }
@@ -1461,6 +1626,7 @@
                     username: username,
                     email: email,
                     profileLink: profile,
+                    profileImage: uploadedImageBase64 || '', // Imagen en base64
                     fechaUnion: new Date().toISOString()
                 };
                 
@@ -1521,7 +1687,6 @@
                     fechaSalida: new Date().toISOString()
                 };
                 
-                // Enviar a Google Apps Script
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1531,17 +1696,13 @@
                     body: JSON.stringify(datos)
                 });
                 
-                // Limpiar sesión
                 clearSession();
                 
-                // Restaurar botón
                 const container = document.getElementById('button-container');
                 container.innerHTML = '<button class="btn-enter" id="btn-action" onclick="handleMainAction()">Enter</button>';
                 
-                // Ocultar de rankings
                 document.getElementById('user-ranking').style.display = 'none';
                 
-                // Decrementar contador
                 const current = parseInt(document.getElementById('num-participantes').textContent);
                 document.getElementById('num-participantes').textContent = Math.max(0, current - 1);
                 
@@ -1600,7 +1761,6 @@
             }
         }
 
-        // Cerrar modal al hacer clic fuera
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay && !overlay.id.includes('success')) {
