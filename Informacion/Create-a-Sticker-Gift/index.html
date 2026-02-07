@@ -38,6 +38,11 @@
             color: #e74c3c;
         }
 
+        .event-ended {
+            color: #999;
+            font-weight: 600;
+        }
+
         /* Hero Banner */
         .hero-banner {
             width: 100%;
@@ -137,26 +142,37 @@
             margin-bottom: 1rem;
         }
 
-        /* Awards Header */
+        /* Awards Section */
+        .awards-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
         .awards-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7c7fd6 0%, #5a5fc7 100%);
             color: white;
             text-align: center;
-            padding: 1rem;
-            margin: -1.5rem -1.5rem 1rem -1.5rem;
-            border-radius: 16px 16px 0 0;
+            padding: 1.25rem;
         }
 
         .awards-header h3 {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin: 0;
         }
 
         .awards-header .subtitle {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             opacity: 0.95;
+            margin-top: 0.25rem;
+        }
+
+        .awards-content {
+            padding: 1.5rem;
         }
 
         /* Gift Image Container */
@@ -174,7 +190,7 @@
             display: block;
         }
 
-        /* Gift Examples - CORREGIDO: Usando imagen real */
+        /* Gift Examples */
         .gift-examples-real {
             width: 100%;
             max-width: 300px;
@@ -202,12 +218,11 @@
         .info-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
             font-size: 0.9rem;
         }
 
         .info-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7c7fd6 0%, #5a5fc7 100%);
             color: white;
             padding: 0.75rem;
             text-align: left;
@@ -310,6 +325,7 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 1rem;
         }
 
         .accordion-header {
@@ -379,7 +395,7 @@
             line-height: 1.6;
         }
 
-        /* Rankings Header - CORREGIDO: Icono al lado */
+        /* Rankings Header */
         .rankings-header {
             display: flex;
             align-items: center;
@@ -398,6 +414,69 @@
             font-weight: 400;
             font-size: 0.9rem;
             margin-left: 0.5rem;
+        }
+
+        /* User Ranking Card */
+        .user-ranking-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-rank-position {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #333;
+            min-width: 50px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .verified-badge {
+            color: #3498db;
+            font-size: 0.9rem;
+        }
+
+        .user-score {
+            color: #3498db;
+            font-weight: 700;
+            font-size: 0.9rem;
         }
 
         .ranking-list {
@@ -479,6 +558,228 @@
             font-size: 0.9rem;
         }
 
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #7c7fd6;
+            box-shadow: 0 0 0 3px rgba(124, 127, 214, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #aaa;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.25rem;
+        }
+
+        /* Button States */
+        .enter-button-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            color: white;
+            border: none;
+            padding: 1rem 4rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-enter:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.6);
+        }
+
+        .btn-enter:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-enter.entered {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        }
+
+        .btn-leave {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn-leave:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6);
+        }
+
+        .btn-leave:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Modales */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlide 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-modal {
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-ok {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-ok:hover {
+            background: #1976d2;
+        }
+
+        .btn-ok-full {
+            background: #2196f3;
+            color: white;
+            padding: 0.75rem 3rem;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
+        }
+
+        .btn-ok-full:hover {
+            background: #1976d2;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Tab Content */
         .tab-content {
             display: none;
@@ -494,19 +795,29 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Loading State */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        /* Espacio para el botón fijo */
+        .content-spacer {
+            height: 100px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* Alert Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
         }
 
         /* Responsive */
@@ -518,8 +829,18 @@
             .tabs {
                 font-size: 0.9rem;
             }
+
+            .btn-enter, .btn-leave {
+                padding: 0.875rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .modal {
+                padding: 1.5rem;
+            }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -559,7 +880,7 @@
                 </p>
             </div>
 
-            <!-- Original Gift Image - CORREGIDO: URL de reality.app -->
+            <!-- Original Gift Image -->
             <div class="card">
                 <div class="card-subtitle">IMAGEN DEL REGALO ORIGINAL</div>
                 <div class="gift-image-container">
@@ -570,13 +891,13 @@
                 <p class="disclaimer">*La imagen de arriba es una muestra. El diseño y distribución real pueden diferir.</p>
             </div>
 
-            <!-- Awards Table -->
-            <div class="card" style="padding: 0; padding-bottom: 1.5rem;">
+            <!-- Awards Section -->
+            <div class="awards-section">
                 <div class="awards-header">
                     <h3>Premios</h3>
                     <div class="subtitle">Streamer</div>
                 </div>
-                <div style="padding: 0 1.5rem;">
+                <div class="awards-content">
                     <table class="info-table">
                         <thead>
                             <tr>
@@ -594,7 +915,7 @@
                 </div>
             </div>
 
-            <!-- Schedule - Fechas dinámicas -->
+            <!-- Schedule -->
             <div class="card">
                 <h3 class="card-title">Calendario</h3>
                 
@@ -620,13 +941,13 @@
                 <h3 class="card-title">Detalles de los Premios</h3>
                 
                 <ul class="details-list">
-                    <li>Solo los usuarios que tengan su región configurada en EE.UU. durante todo el período del evento son elegibles para recibir premios. Los usuarios que cambien de región durante el evento no serán elegibles.</li>
+                    <li>Solo los usuarios que mantengan su configuración regional en Global durante todo el período del evento son elegibles para recibir premios. Los usuarios que cambien de región durante el evento no serán elegibles.</li>
                 </ul>
 
                 <div class="section-header">■Creación de Regalo Original</div>
                 <ul class="details-list">
                     <li>Creadores: Usuarios que ocupen del 1° al 3° lugar en este evento.</li>
-                    <li>Estos usuarios serán notificados antes del 10 de febrero de 2026 a las 23:59 -05 a través de la pantalla "Chat" en la App REALITY.</li>
+                    <li>Estos usuarios serán notificados antes del 10 de febrero de 2026 a las 23:59 -05 a través de la pantalla "Chat" en la App Estelar.</li>
                     <li>El nombre del regalo, la imagen base a utilizar y el nombre del creador deben enviarse antes del 22 de febrero de 2026 a las 09:59 -05.</li>
                     <li>A estos usuarios se les pedirá que presenten un Certificado de transferencia de derechos de la ilustración. El incumplimiento resultará en la cancelación del premio.</li>
                 </ul>
@@ -644,7 +965,6 @@
 
                 <div class="section-header">■Imágenes a Utilizar para los Regalos</div>
                 
-                <!-- CORREGIDO: Imagen real de GitHub -->
                 <div class="gift-examples-real">
                     <img src="https://raw.githubusercontent.com/estelarlatam/eventos/refs/heads/main/Informacion/Create-a-Sticker-Gift/contenido-del-evento/%E2%96%A0Im%C3%A1genes%20para%20usar%20en%20regalos.png" 
                          alt="Imágenes para usar en regalos" 
@@ -724,7 +1044,7 @@
                     </button>
                     <div class="accordion-content">
                         <div class="accordion-body">
-                            Para participar en el evento, toca el botón "Entrar" en la parte superior de esta página. Asegúrate de cumplir con todos los requisitos de elegibilidad antes de inscribirte.
+                            Para participar en el evento, toca el botón "Entrar" en la parte inferior de esta página. Asegúrate de cumplir con todos los requisitos de elegibilidad antes de inscribirte.
                         </div>
                     </div>
                 </div>
@@ -736,7 +1056,7 @@
                     </button>
                     <div class="accordion-content">
                         <div class="accordion-body">
-                            - Tener la región configurada en EE.UU.<br>
+                            - Tener la región configurada en Global<br>
                             - Haber transmitido al menos 15 minutos por día durante 7 días diferentes<br>
                             - Cumplir con los términos de servicio de la plataforma<br>
                             - No haber sido suspendido previamente en eventos similares
@@ -757,11 +1077,28 @@
                 </div>
             </div>
 
+            <div class="content-spacer"></div>
+
         </div>
 
-        <!-- TAB: RANKINGS - Participantes dinámicos -->
+        <!-- TAB: RANKINGS -->
         <div id="rankings" class="tab-content">
             
+            <!-- User Ranking Card -->
+            <div class="user-ranking-card" id="user-ranking" style="display: none;">
+                <div class="user-rank-position" id="user-position">--</div>
+                <div class="user-avatar" id="user-avatar">
+                    <span>👤</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">
+                        <span id="user-name-display">--</span>
+                        <span class="verified-badge">✓</span>
+                    </div>
+                    <div class="user-score" id="user-score">0</div>
+                </div>
+            </div>
+
             <div class="rankings-header">
                 <span>Clasificaciones</span>
                 <span class="participant-count">
@@ -771,29 +1108,118 @@
             </div>
 
             <div class="ranking-list" id="ranking-list">
-                <!-- Los rankings se cargarán dinámicamente o mostrarán mensaje vacío -->
                 <div class="ranking-item" style="justify-content: center; padding: 2rem; color: #888;">
                     No hay datos de clasificación disponibles
                 </div>
             </div>
 
+            <div class="content-spacer"></div>
+
         </div>
 
     </div>
 
+    <!-- Botones Fijos -->
+    <div class="enter-button-container" id="button-container">
+        <button class="btn-enter" id="btn-action" onclick="handleMainAction()">Enter</button>
+    </div>
+
+    <!-- Modal de Formulario de Registro -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <div class="modal-title">Únete al Evento</div>
+            <div id="register-error"></div>
+            
+            <div class="form-group">
+                <label class="form-label">Nombre de Usuario *</label>
+                <input type="text" class="form-input" id="reg-username" placeholder="Tu nombre de usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Correo Electrónico *</label>
+                <input type="email" class="form-input" id="reg-email" placeholder="tu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Link del Perfil *</label>
+                <input type="url" class="form-input" id="reg-profile" placeholder="https://estelar.app/usuario" required>
+                <div class="form-hint">URL completa de tu perfil en Estelar</div>
+            </div>
+
+            <button class="btn-ok-full" onclick="submitRegistration()" id="btn-register">
+                Confirmar Registro
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación de Salida -->
+    <div class="modal-overlay" id="leaveModal">
+        <div class="modal">
+            <div class="modal-title">¿Estás seguro de que deseas salir del evento?</div>
+            <p style="color: #666; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Si sales del evento, perderás tu progreso y puntuación acumulada. Esta acción no se puede deshacer.
+            </p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="closeModals()">Cancelar</button>
+                <button class="btn-modal btn-ok" onclick="confirmLeave()">Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Éxito -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="modal-title" id="success-title">¡Registro Exitoso!</div>
+            <p style="color: #666; margin-bottom: 1.5rem;" id="success-message">
+                Te has unido al evento correctamente.
+            </p>
+            <button class="btn-ok-full" onclick="closeModals()">OK</button>
+        </div>
+    </div>
+
     <script>
-        // Variables para almacenar datos del evento
+        // ==========================================
+        // CONFIGURACIÓN - TU URL DE GOOGLE APPS SCRIPT
+        // ==========================================
+        
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZPt1N0w0pmtpXFY_M5DYSXshNkVc292VfaWju-NpJdaxwQSykdpFifUi_tG7UQcUdDw/exec';
+        
+        // ==========================================
+        // VARIABLES GLOBALES
+        // ==========================================
+        
         let eventoData = null;
         let fechaFin = null;
+        let eventoFinalizado = false;
+        let usuarioActual = null;
 
-        // Cargar datos del JSON
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Abrir primer acordeón
+            const firstAccordion = document.querySelector('.accordion-item.active .accordion-content');
+            if (firstAccordion) {
+                firstAccordion.style.maxHeight = firstAccordion.scrollHeight + "px";
+            }
+            
+            // Cargar datos del evento
+            cargarDatosEvento();
+            
+            // Verificar sesión guardada
+            checkSavedSession();
+        });
+
+        // ==========================================
+        // CARGA DE DATOS
+        // ==========================================
+
         async function cargarDatosEvento() {
             try {
-                // Usar un proxy CORS o fetch directo si está disponible
                 const response = await fetch('https://raw.githubusercontent.com/estelarlatam/eventos/main/lista-de-eventos.json');
                 const eventos = await response.json();
                 
-                // Buscar el evento específico
                 eventoData = eventos.find(e => e.titulo === "Crear un Regalo de Sticker - Evento Especial");
                 
                 if (eventoData) {
@@ -801,19 +1227,27 @@
                 }
             } catch (error) {
                 console.error('Error cargando datos:', error);
-                // Usar valores por defecto si falla la carga
                 usarDatosPorDefecto();
             }
         }
 
         function actualizarUI(data) {
-            // Actualizar número de participantes
             document.getElementById('num-participantes').textContent = data.participantes || 0;
             
-            // Actualizar fechas
             const fechaInicio = new Date(data.fecha_inicio);
             const fechaFinEvento = new Date(data.fecha_fin);
-            fechaFin = fechaFinEvento; // Guardar para countdown
+            fechaFin = fechaFinEvento;
+            
+            const ahora = new Date();
+            eventoFinalizado = ahora > fechaFinEvento;
+            
+            if (eventoFinalizado) {
+                document.getElementById('countdown').textContent = 'Evento finalizado';
+                document.getElementById('countdown').className = 'event-ended';
+                updateButtonState();
+            } else {
+                iniciarCountdown();
+            }
             
             const opciones = { 
                 year: 'numeric', 
@@ -824,7 +1258,6 @@
                 timeZoneName: 'short'
             };
             
-            // Formatear fechas (simulando período de inscripción antes del evento)
             const fechaInicioInscripcion = new Date(fechaInicio);
             fechaInicioInscripcion.setDate(fechaInicioInscripcion.getDate() - 7);
             
@@ -833,18 +1266,17 @@
             
             document.getElementById('fecha-evento').textContent = 
                 `${fechaInicio.toLocaleDateString('es-ES', opciones)} al ${fechaFinEvento.toLocaleDateString('es-ES', opciones)}`;
-            
-            // Iniciar countdown con fecha real
-            iniciarCountdown();
         }
 
         function usarDatosPorDefecto() {
-            // Valores de respaldo basados en el JSON que mostraste
             document.getElementById('num-participantes').textContent = '0';
             
             const fechaInicio = new Date('2026-02-06T12:00:00');
             const fechaFinEvento = new Date('2026-02-08T06:00:00');
             fechaFin = fechaFinEvento;
+            
+            const ahora = new Date();
+            eventoFinalizado = ahora > fechaFinEvento;
             
             document.getElementById('fecha-inscripcion').textContent = 
                 '26 de enero de 2026, 18:00 GMT-5 al 8 de febrero de 2026, 06:00 GMT-5';
@@ -852,12 +1284,20 @@
             document.getElementById('fecha-evento').textContent = 
                 '6 de febrero de 2026, 12:00 GMT-5 al 8 de febrero de 2026, 06:00 GMT-5';
             
-            iniciarCountdown();
+            if (eventoFinalizado) {
+                document.getElementById('countdown').textContent = 'Evento finalizado';
+                document.getElementById('countdown').className = 'event-ended';
+            } else {
+                iniciarCountdown();
+            }
         }
 
-        // Countdown Timer
+        // ==========================================
+        // COUNTDOWN
+        // ==========================================
+
         function iniciarCountdown() {
-            function updateCountdown() {
+            function update() {
                 if (!fechaFin) return;
                 
                 const now = new Date();
@@ -873,14 +1313,264 @@
                         `${days} d ${hours} h ${minutes} min ${seconds} s`;
                 } else {
                     document.getElementById('countdown').textContent = 'Evento finalizado';
+                    document.getElementById('countdown').className = 'event-ended';
+                    eventoFinalizado = true;
+                    updateButtonState();
                 }
             }
             
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+            update();
+            setInterval(update, 1000);
         }
 
-        // Tab Switching
+        // ==========================================
+        // GESTIÓN DE SESIÓN
+        // ==========================================
+
+        function checkSavedSession() {
+            const saved = localStorage.getItem('estelar_event_user');
+            if (saved) {
+                try {
+                    usuarioActual = JSON.parse(saved);
+                    if (usuarioActual.evento === 'Create-a-Sticker-Gift') {
+                        showEnteredState();
+                    }
+                } catch (e) {
+                    localStorage.removeItem('estelar_event_user');
+                }
+            }
+        }
+
+        function saveSession(data) {
+            localStorage.setItem('estelar_event_user', JSON.stringify({
+                ...data,
+                evento: 'Create-a-Sticker-Gift',
+                fechaUnion: new Date().toISOString()
+            }));
+        }
+
+        function clearSession() {
+            localStorage.removeItem('estelar_event_user');
+            usuarioActual = null;
+        }
+
+        // ==========================================
+        // BOTONES Y ACCIONES
+        // ==========================================
+
+        function updateButtonState() {
+            const btn = document.getElementById('btn-action');
+            
+            if (eventoFinalizado) {
+                btn.textContent = 'Evento Finalizado';
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+                return;
+            }
+            
+            if (usuarioActual) {
+                showEnteredState();
+            }
+        }
+
+        function showEnteredState() {
+            const container = document.getElementById('button-container');
+            container.innerHTML = `
+                <button class="btn-enter entered" disabled>Entered</button>
+                <button class="btn-leave" onclick="showLeaveModal()">Salir</button>
+            `;
+            
+            document.getElementById('user-ranking').style.display = 'flex';
+            document.getElementById('user-name-display').textContent = usuarioActual.username || 'Usuario';
+        }
+
+        function handleMainAction() {
+            if (eventoFinalizado) return;
+            if (usuarioActual) return;
+            
+            showRegisterModal();
+        }
+
+        // ==========================================
+        // MODALES
+        // ==========================================
+
+        function showRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+        }
+
+        function showLeaveModal() {
+            if (eventoFinalizado) {
+                showError('No puedes salir del evento porque ya ha finalizado.');
+                return;
+            }
+            document.getElementById('leaveModal').classList.add('active');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.getElementById('register-error').innerHTML = '';
+        }
+
+        function showSuccess(title, message) {
+            document.getElementById('success-title').textContent = title;
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('register-error');
+            errorDiv.innerHTML = `<div class="alert alert-error">${message}</div>`;
+        }
+
+        // ==========================================
+        // REGISTRO (UNIRSE AL EVENTO)
+        // ==========================================
+
+        async function submitRegistration() {
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const profile = document.getElementById('reg-profile').value.trim();
+            
+            if (!username || !email || !profile) {
+                showError('Por favor completa todos los campos obligatorios.');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showError('Por favor ingresa un correo electrónico válido.');
+                return;
+            }
+            
+            if (!isValidURL(profile)) {
+                showError('Por favor ingresa una URL válida para tu perfil.');
+                return;
+            }
+            
+            const btn = document.getElementById('btn-register');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Procesando...';
+            
+            try {
+                const datos = {
+                    action: 'join',
+                    evento: 'Create-a-Sticker-Gift',
+                    username: username,
+                    email: email,
+                    profileLink: profile,
+                    fechaUnion: new Date().toISOString()
+                };
+                
+                // Enviar a Google Apps Script
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(datos)
+                });
+                
+                // Guardar sesión local
+                usuarioActual = datos;
+                saveSession(datos);
+                
+                // Actualizar UI
+                closeModals();
+                showSuccess('¡Registro Exitoso!', 'Te has unido al evento correctamente. ¡Buena suerte!');
+                showEnteredState();
+                
+                // Incrementar contador local
+                const current = parseInt(document.getElementById('num-participantes').textContent);
+                document.getElementById('num-participantes').textContent = current + 1;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Hubo un error al procesar tu registro. Por favor intenta de nuevo.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        // ==========================================
+        // SALIR DEL EVENTO
+        // ==========================================
+
+        async function confirmLeave() {
+            if (eventoFinalizado) {
+                showError('No puedes salir del evento porque ya ha finalizado.');
+                closeModals();
+                return;
+            }
+            
+            if (!usuarioActual) {
+                closeModals();
+                return;
+            }
+            
+            try {
+                const datos = {
+                    action: 'leave',
+                    evento: 'Create-a-Sticker-Gift',
+                    username: usuarioActual.username,
+                    email: usuarioActual.email,
+                    fechaSalida: new Date().toISOString()
+                };
+                
+                // Enviar a Google Apps Script
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(datos)
+                });
+                
+                // Limpiar sesión
+                clearSession();
+                
+                // Restaurar botón
+                const container = document.getElementById('button-container');
+                container.innerHTML = '<button class="btn-enter" id="btn-action" onclick="handleMainAction()">Enter</button>';
+                
+                // Ocultar de rankings
+                document.getElementById('user-ranking').style.display = 'none';
+                
+                // Decrementar contador
+                const current = parseInt(document.getElementById('num-participantes').textContent);
+                document.getElementById('num-participantes').textContent = Math.max(0, current - 1);
+                
+                closeModals();
+                showSuccess('Salida Exitosa', 'Has salido del evento correctamente.');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Hubo un error al procesar tu solicitud.');
+            }
+        }
+
+        // ==========================================
+        // UTILIDADES
+        // ==========================================
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function isValidURL(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -894,7 +1584,6 @@
             event.target.classList.add('active');
         }
 
-        // Accordion Toggle
         function toggleAccordion(trigger) {
             const item = trigger.parentElement;
             const isActive = item.classList.contains('active');
@@ -911,16 +1600,13 @@
             }
         }
 
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', () => {
-            // Abrir primer acordeón
-            const firstAccordion = document.querySelector('.accordion-item.active .accordion-content');
-            if (firstAccordion) {
-                firstAccordion.style.maxHeight = firstAccordion.scrollHeight + "px";
-            }
-            
-            // Cargar datos del evento
-            cargarDatosEvento();
+        // Cerrar modal al hacer clic fuera
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay && !overlay.id.includes('success')) {
+                    closeModals();
+                }
+            });
         });
     </script>
 
