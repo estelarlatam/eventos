@@ -1290,6 +1290,7 @@
         // CONFIGURACIÓN - TU URL DE GOOGLE APPS SCRIPT
         // ==========================================
         
+        // URL NUEVA - VERSIÓN 6 (la que funciona)
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLbkZQu3W1DG0kgScvjsO2eHC7rSpXnyfKB962yhAWVTJMntS3_RIgg7uM5XIUtcbk/exec';
         
         // ==========================================
@@ -1323,31 +1324,28 @@
         // ==========================================
 
         function cargarParticipantes() {
+            console.log('Iniciando carga de participantes...');
+            
             const script = document.createElement('script');
             const callbackName = 'handleParticipants_' + Date.now();
             
             // Crear función callback global temporal
             window[callbackName] = function(data) {
+                console.log('Respuesta recibida:', data);
+                
                 if (data.success && data.participants) {
                     participantesData = data.participants;
+                    console.log('Participantes cargados:', participantesData.length);
                     
-                    // Ordenar por puntuación
-                    participantesData.sort((a, b) => {
-                        const scoreA = parseInt(a.score) || 0;
-                        const scoreB = parseInt(b.score) || 0;
-                        return scoreB - scoreA;
-                    });
+                    // Guardar en localStorage para próximas cargas
+                    localStorage.setItem('estelar_participants', JSON.stringify(participantesData));
                     
-                    // Actualizar contador
-                    document.getElementById('num-participantes').textContent = participantesData.length;
-                    
-                    // Renderizar rankings
-                    renderizarRankings();
-                    
-                    // Si hay usuario actual, actualizar su posición
-                    if (usuarioActual) {
-                        actualizarPosicionUsuario();
-                    }
+                    // Actualizar UI
+                    actualizarUIParticipantes();
+                } else {
+                    console.error('Error en datos:', data.error || 'Sin participantes');
+                    // Intentar cargar desde localStorage como respaldo
+                    cargarDesdeLocalStorage();
                 }
                 
                 // Limpiar
@@ -1360,35 +1358,54 @@
             // URL con callback
             const url = GOOGLE_SCRIPT_URL + '?action=getParticipants&evento=Create-a-Sticker-Gift&callback=' + callbackName + '&t=' + Date.now();
             
+            console.log('Llamando URL:', url);
+            
             script.src = url;
             script.onerror = function() {
-                console.error('Error cargando participantes');
-                cargarParticipantesLocal(); // Fallback
+                console.error('Error de red al cargar participantes');
                 delete window[callbackName];
                 if (script.parentNode) {
                     document.head.removeChild(script);
                 }
+                // Intentar cargar desde localStorage como respaldo
+                cargarDesdeLocalStorage();
             };
             
             document.head.appendChild(script);
         }
 
-        function cargarParticipantesLocal() {
-            // Cargar desde localStorage como respaldo
+        function cargarDesdeLocalStorage() {
+            console.log('Intentando cargar desde localStorage...');
             const saved = localStorage.getItem('estelar_participants');
             if (saved) {
                 try {
                     participantesData = JSON.parse(saved);
-                    document.getElementById('num-participantes').textContent = participantesData.length;
-                    renderizarRankings();
+                    console.log('Cargados desde localStorage:', participantesData.length);
+                    actualizarUIParticipantes();
                 } catch (e) {
-                    console.error('Error cargando participantes locales:', e);
+                    console.error('Error parseando localStorage:', e);
                 }
             }
         }
 
-        function guardarParticipantesLocal() {
-            localStorage.setItem('estelar_participants', JSON.stringify(participantesData));
+        function actualizarUIParticipantes() {
+            // Ordenar por puntuación
+            participantesData.sort((a, b) => {
+                const scoreA = parseInt(a.score) || 0;
+                const scoreB = parseInt(b.score) || 0;
+                return scoreB - scoreA;
+            });
+            
+            // Actualizar contador
+            document.getElementById('num-participantes').textContent = participantesData.length;
+            
+            // Renderizar rankings
+            renderizarRankings();
+            
+            // Si hay usuario actual, actualizar su posición
+            if (usuarioActual) {
+                actualizarPosicionUsuario();
+            }
         }
 
         function renderizarRankings() {
@@ -1794,7 +1811,9 @@
                 // Agregar a la lista local y reordenar
                 participantesData.push(datos);
                 participantesData.sort((a, b) => (b.score || 0) - (a.score || 0));
-                guardarParticipantesLocal();
+                
+                // Guardar en localStorage
+                localStorage.setItem('estelar_participants', JSON.stringify(participantesData));
                 
                 // Actualizar UI
                 closeModals();
@@ -1850,7 +1869,7 @@
                 
                 // Eliminar de la lista local
                 participantesData = participantesData.filter(p => p.email !== usuarioActual.email);
-                guardarParticipantesLocal();
+                localStorage.setItem('estelar_participants', JSON.stringify(participantesData));
                 
                 clearSession();
                 
