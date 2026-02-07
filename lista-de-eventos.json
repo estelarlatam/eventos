@@ -1,1 +1,11 @@
-
+[
+  {
+    "titulo": "Create a Sticker Gift!",
+    "estado": "En curso",
+    "fecha_inicio": "2026-02-06T12:00:00",
+    "fecha_fin": "2026-02-08T06:00:00",
+    "participantes": 47,
+    "imagen": "https://raw.githubusercontent.com/estelarlatam/eventos/refs/heads/main/Imagenes/Eventos/En-curso/Create-a-Sticker-Gift.png",
+    "link": "https://github.com/..."
+  }
+]
