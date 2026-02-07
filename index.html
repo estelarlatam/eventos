@@ -302,6 +302,7 @@
             font-size: 14px;
             text-align: center;
             padding: 20px;
+            background: #ff6b6b;
         }
 
         /* Responsive */
@@ -385,17 +386,18 @@
     </div>
 
     <script>
-        // Configuración de GitHub
-        const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/estelarlatam/eventos/main';
+        // Configuración de GitHub - URLs CORREGIDAS
+        const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/estelarlatam/eventos/main';
         const GITHUB_INFO_URL = 'https://github.com/estelarlatam/eventos/tree/main/Informacion';
 
-        // Datos de eventos (puedes expandir esta lista o cargarla desde un JSON)
+        // Datos de eventos - RUTAS CORREGIDAS según tu estructura real
         const eventsData = {
             current: [
                 {
                     id: 'sticker',
                     title: 'Create a Sticker Gift',
-                    image: 'sticker-gift.jpg',
+                    // Ruta corregida: incluye /Imagenes/ y usa .png
+                    image: 'Imagenes/Eventos/En-curso/Create-a-Sticker-Gift.png',
                     participants: 47,
                     time: 'Termina en 1d 16:51:20',
                     ended: false
@@ -403,7 +405,8 @@
                 {
                     id: 'gacha',
                     title: 'Win Gacha Tickets',
-                    image: 'gacha-tickets.jpg',
+                    // Ajusta esta ruta cuando subas la imagen real
+                    image: 'Imagenes/Eventos/En-curso/Win-Gacha-Tickets.png',
                     participants: 593,
                     time: 'Termina en 1d 16:51:20',
                     ended: false
@@ -413,7 +416,7 @@
                 {
                     id: 'super',
                     title: 'Super Event',
-                    image: 'super-event.jpg',
+                    image: 'Imagenes/Eventos/Proximos/Super-Event.png',
                     participants: 23,
                     time: '10 feb, 12:00 a.m. - 16 feb, 6:00 a.m.',
                     ended: false
@@ -421,7 +424,7 @@
                 {
                     id: 'drip',
                     title: 'Choose Your Drip',
-                    image: 'choose-drip.jpg',
+                    image: 'Imagenes/Eventos/Proximos/Choose-Your-Drip.png',
                     participants: 70,
                     time: '10 feb, 12:00 a.m. - 16 feb, 6:00 a.m.',
                     ended: false
@@ -431,7 +434,7 @@
                 {
                     id: 'tee',
                     title: 'Your avatar printed on a Tee',
-                    image: 'avatar-tee.jpg',
+                    image: 'Imagenes/Eventos/Terminados/Avatar-Tee.png',
                     participants: 86,
                     time: '27 ene, 12:00 a.m. - 2 feb, 6:00 a.m.',
                     ended: true
@@ -439,7 +442,7 @@
                 {
                     id: 'standout',
                     title: 'Stand Out Dare to Shine',
-                    image: 'stand-out.jpg',
+                    image: 'Imagenes/Eventos/Terminados/Stand-Out.png',
                     participants: 502,
                     time: '27 ene, 12:00 a.m. - 2 feb, 6:00 a.m.',
                     ended: true
@@ -447,7 +450,7 @@
                 {
                     id: 'debut',
                     title: 'Debut Grand Prix',
-                    image: 'debut-grand-prix.jpg',
+                    image: 'Imagenes/Eventos/Terminados/Debut-Grand-Prix.png',
                     participants: 36,
                     time: '27 ene, 12:00 a.m. - 2 feb, 6:00 a.m.',
                     ended: true
@@ -466,21 +469,19 @@
             return `${GITHUB_INFO_URL}/${slug}`;
         }
 
-        // Función para generar URL de imagen
-        function generateImageURL(category, imageName) {
-            const folderMap = {
-                'current': 'En-curso',
-                'upcoming': 'Proximos',
-                'ended': 'Terminados'
-            };
-            return `${GITHUB_BASE_URL}/Eventos/${folderMap[category]}/${imageName}`;
+        // Función para generar URL de imagen RAW de GitHub
+        function generateImageURL(imagePath) {
+            // Usa la URL raw de GitHub para poder mostrar la imagen
+            return `${GITHUB_RAW_URL}/${imagePath}`;
         }
 
         // Función para crear tarjeta de evento
-        function createEventCard(event, category) {
-            const imageUrl = generateImageURL(category, event.image);
+        function createEventCard(event) {
+            const imageUrl = generateImageURL(event.image);
             const eventUrl = generateEventURL(event.title);
             const timeClass = event.ended ? 'ended' : '';
+            
+            console.log('Cargando imagen desde:', imageUrl); // Para debugging
             
             const card = document.createElement('a');
             card.className = 'event-card';
@@ -495,7 +496,7 @@
                         alt="${event.title}" 
                         class="event-banner"
                         onload="this.parentElement.classList.remove('loading')"
-                        onerror="this.parentElement.innerHTML='<div class=\'image-error\'>Imagen no disponible</div>'"
+                        onerror="handleImageError(this, '${event.title}')"
                     >
                 </div>
                 <div class="event-info">
@@ -521,24 +522,40 @@
             return card;
         }
 
+        // Manejador de errores de imagen mejorado
+        function handleImageError(img, title) {
+            console.error('Error cargando imagen:', img.src);
+            const container = img.parentElement;
+            container.classList.remove('loading');
+            container.innerHTML = `
+                <div class="image-error">
+                    <div>
+                        <div style="font-size: 24px; margin-bottom: 5px;">🖼️</div>
+                        <div>Imagen no encontrada</div>
+                        <div style="font-size: 11px; margin-top: 5px; opacity: 0.8;">${title}</div>
+                    </div>
+                </div>
+            `;
+        }
+
         // Función para renderizar eventos
         function renderEvents() {
             // Renderizar eventos en curso
             const currentContainer = document.getElementById('currentEvents');
             eventsData.current.forEach(event => {
-                currentContainer.appendChild(createEventCard(event, 'current'));
+                currentContainer.appendChild(createEventCard(event));
             });
             
             // Renderizar eventos próximos
             const upcomingContainer = document.getElementById('upcomingEvents');
             eventsData.upcoming.forEach(event => {
-                upcomingContainer.appendChild(createEventCard(event, 'upcoming'));
+                upcomingContainer.appendChild(createEventCard(event));
             });
             
             // Renderizar eventos terminados
             const endedContainer = document.getElementById('endedEvents');
             eventsData.ended.forEach(event => {
-                endedContainer.appendChild(createEventCard(event, 'ended'));
+                endedContainer.appendChild(createEventCard(event));
             });
         }
 
