@@ -38,14 +38,14 @@
             color: #e74c3c;
         }
 
-        /* Hero Banner */
+        /* Hero Banner - Usando imagen externa */
         .hero-banner {
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             position: relative;
-            background: linear-gradient(135deg, #ffb6c1 0%, #ffc0cb 50%, #ffd1dc 100%);
             overflow: hidden;
+            background: #ffd4c7;
         }
 
         .hero-banner img {
@@ -53,62 +53,6 @@
             height: auto;
             display: block;
         }
-
-        .banner-content {
-            position: relative;
-            padding: 2rem;
-            text-align: center;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23ffb6c1" width="100" height="100"/><path fill="%23ff9eb5" d="M0 0h100v100H0z" opacity=".3"/></svg>');
-            background-size: cover;
-        }
-
-        .character-img {
-            width: 150px;
-            height: auto;
-            position: absolute;
-            left: 10%;
-            bottom: 0;
-            z-index: 2;
-        }
-
-        .event-title {
-            font-size: 2.5rem;
-            color: #fff;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-            font-weight: 800;
-            transform: rotate(-3deg);
-            display: inline-block;
-            background: linear-gradient(45deg, #fff 0%, #ffe4e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .followers-badge {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            transform: rotate(-15deg);
-            box-shadow: 0 4px 15px rgba(196, 69, 105, 0.4);
-        }
-
-        .sticker-float {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .sticker-1 { top: 10%; right: 15%; transform: rotate(15deg); }
-        .sticker-2 { top: 30%; right: 5%; transform: rotate(-10deg); width: 50px; height: 50px; }
-        .sticker-3 { bottom: 20%; left: 5%; transform: rotate(20deg); width: 55px; height: 55px; }
 
         /* Tabs Navigation */
         .tabs-container {
@@ -122,7 +66,7 @@
 
         .tabs {
             display: flex;
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
@@ -152,7 +96,7 @@
 
         /* Content Container */
         .content-wrapper {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 1.5rem;
         }
@@ -165,6 +109,7 @@
             margin-bottom: 1rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             border: 1px solid rgba(255,255,255,0.6);
+            overflow: hidden;
         }
 
         .card-title {
@@ -192,36 +137,41 @@
             margin-bottom: 1rem;
         }
 
-        .highlight-text {
-            color: #e74c3c;
-            font-weight: 600;
+        /* CORRECCIÓN: Header de Premios con degradado morado */
+        .awards-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            border-radius: 16px 16px 0 0;
         }
 
-        /* Image Container */
-        .image-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .awards-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .awards-header .subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        /* CORRECCIÓN: Imagen del regalo con fondo geométrico */
+        .gift-image-container {
+            width: 100%;
             border-radius: 12px;
             overflow: hidden;
             margin: 1rem 0;
-            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .image-container img {
+        .gift-image-container img {
             width: 100%;
             height: auto;
             display: block;
-        }
-
-        .sample-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.9);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #333;
         }
 
         .disclaimer {
@@ -241,7 +191,7 @@
         }
 
         .info-table th {
-            background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 0.75rem;
             text-align: left;
@@ -433,7 +383,7 @@
             line-height: 1.6;
         }
 
-        /* Rankings Section */
+        /* CORRECCIÓN: Rankings Header con icono al lado */
         .rankings-header {
             display: flex;
             align-items: center;
@@ -445,9 +395,13 @@
         }
 
         .participant-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
             color: #666;
             font-weight: 400;
             font-size: 0.9rem;
+            margin-left: 0.5rem;
         }
 
         .ranking-list {
@@ -550,10 +504,6 @@
                 padding: 1rem;
             }
             
-            .event-title {
-                font-size: 1.75rem;
-            }
-            
             .tabs {
                 font-size: 0.9rem;
             }
@@ -568,45 +518,11 @@
         Hasta el final del evento: <span class="countdown-time" id="countdown">1 d 13 h 21 min 14 s</span>
     </div>
 
-    <!-- Hero Banner -->
+    <!-- Hero Banner - CORREGIDO: Usando imagen externa de GitHub -->
     <div class="hero-banner">
-        <div class="followers-badge">Followers<br>200~</div>
-        
-        <!-- Simulación visual del banner con emojis y CSS -->
-        <div style="padding: 2rem; text-align: center; position: relative; min-height: 200px; background: linear-gradient(135deg, #ffb7b2 0%, #ffdac1 100%);">
-            
-            <!-- Personaje simulado con emoji/arte CSS -->
-            <div style="position: absolute; left: 5%; bottom: 0; z-index: 2;">
-                <div style="width: 140px; height: 180px; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 70px 70px 0 0; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                    <!-- Cara -->
-                    <div style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); text-align: center;">
-                        <div style="font-size: 3rem;">👧</div>
-                        <div style="background: #4a4a4a; width: 60px; height: 60px; border-radius: 50%; margin: -20px auto 0; position: relative;">
-                            <div style="position: absolute; top: 20px; left: 15px; width: 8px; height: 8px; background: white; border-radius: 50%;"></div>
-                            <div style="position: absolute; top: 20px; right: 15px; width: 8px; height: 8px; background: white; border-radius: 50%;"></div>
-                            <div style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; background: #ff6b9d; border-radius: 0 0 20px 20px;"></div>
-                        </div>
-                    </div>
-                    <!-- Ropa -->
-                    <div style="position: absolute; bottom: 0; width: 100%; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 40px 40px 0 0;"></div>
-                </div>
-            </div>
-
-            <!-- Stickers flotantes -->
-            <div class="sticker-float sticker-1" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); display: flex; align-items: center; justify-content: center; font-size: 2rem;">😈</div>
-            <div class="sticker-float sticker-2" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🎨</div>
-            <div class="sticker-float sticker-3" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">✨</div>
-
-            <!-- Título -->
-            <div style="position: relative; z-index: 3; margin-left: 120px; padding-top: 20px;">
-                <h1 style="font-size: 2.5rem; color: white; text-shadow: 3px 3px 0 #ff6b9d, -1px -1px 0 #ff6b9d; font-weight: 900; transform: rotate(-3deg); line-height: 1.2; font-family: 'Comic Sans MS', cursive;">
-                    Create a<br>Sticker Gift!
-                </h1>
-            </div>
-
-            <!-- Banderines decorativos -->
-            <div style="position: absolute; top: 0; left: 0; right: 0; height: 30px; background: repeating-linear-gradient(90deg, #ff6b9d 0px, #ff6b9d 20px, #ffd93d 20px, #ffd93d 40px, #6bcf7f 40px, #6bcf7f 60px); clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 90% 70%, 85% 100%, 80% 70%, 75% 100%, 70% 70%, 65% 100%, 60% 70%, 55% 100%, 50% 70%, 45% 100%, 40% 70%, 35% 100%, 30% 70%, 25% 100%, 20% 70%, 15% 100%, 10% 70%, 5% 100%, 0 70%);"></div>
-        </div>
+        <img src="https://raw.githubusercontent.com/estelarlatam/eventos/refs/heads/main/Informacion/Create-a-Sticker-Gift/contenido-del-evento/%E2%96%A0Banner-del-Evento.png" 
+             alt="Create a Sticker Gift Event Banner" 
+             onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #ffb6c1 0%, #ffc0cb 100%)'; this.parentElement.innerHTML='<div style=\'padding: 2rem; text-align: center;\'><h1 style=\'color: white; font-size: 2rem;\'>Create a Sticker Gift!</h1></div>';">
     </div>
 
     <!-- Tabs -->
@@ -633,44 +549,39 @@
                 </p>
             </div>
 
-            <!-- Original Gift Image -->
+            <!-- Original Gift Image - CORREGIDO: Usando imagen externa -->
             <div class="card">
-                <div class="card-subtitle">Imagen del regalo original</div>
-                <div class="image-container" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 50%, #ffd93d 50%, #6bcf7f 50%, #4ecdc4 100%); background-size: 40px 40px; position: relative; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 80%; height: 80%; border-radius: 20px; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-                        <!-- Simulación de la imagen del regalo -->
-                        <div style="text-align: center; color: white;">
-                            <div style="font-size: 6rem; margin-bottom: 1rem;">👧</div>
-                            <div style="background: white; color: #764ba2; padding: 0.5rem 1rem; border-radius: 20px; display: inline-block; font-weight: 700; transform: rotate(-5deg); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                                ¡Nos vemos!
-                            </div>
-                            <div style="position: absolute; bottom: 20px; right: 20px; font-size: 3rem;">😈</div>
-                        </div>
-                    </div>
+                <div class="card-subtitle">IMAGEN DEL REGALO ORIGINAL</div>
+                <div class="gift-image-container">
+                    <img src="https://raw.githubusercontent.com/estelarlatam/eventos/refs/heads/main/Informacion/Create-a-Sticker-Gift/contenido-del-evento/%E2%96%A0Im%C3%A1genes%20para%20usar%20en%20regalos.png" 
+                         alt="Imagen del regalo original" 
+                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22><rect fill=%22%23ff6b9d%22 width=%22400%22 height=%22300%22/><text x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22>Imagen del Regalo</text></svg>';">
                 </div>
                 <p class="disclaimer">*La imagen de arriba es una muestra. El diseño y distribución real pueden diferir.</p>
             </div>
 
-            <!-- Awards Table -->
-            <div class="card">
-                <h3 class="card-title">Premios</h3>
-                <div style="text-align: center; background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%); color: white; padding: 0.5rem; font-weight: 600; margin: -1.5rem -1.5rem 1rem -1.5rem; border-radius: 16px 16px 0 0;">
-                    Streamer
+            <!-- Awards Table - CORREGIDO: Header con degradado morado -->
+            <div class="card" style="padding: 0; padding-bottom: 1.5rem;">
+                <div class="awards-header">
+                    <h3>Premios</h3>
+                    <div class="subtitle">Streamer</div>
                 </div>
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th>Condiciones</th>
-                            <th>Premios</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Rank 1° - 3° y obtener una puntuación de evento de 3,000,000 o superior</td>
-                            <td>Oportunidad de crear un regalo original basado en una imagen proporcionada por el usuario.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="padding: 0 1.5rem;">
+                    <table class="info-table">
+                        <thead>
+                            <tr>
+                                <th>Condiciones</th>
+                                <th>Premios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rank 1° - 3° y obtener una puntuación de evento de 3,000,000 o superior</td>
+                                <td>Oportunidad de crear un regalo original basado en una imagen proporcionada por el usuario.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Schedule -->
@@ -836,12 +747,15 @@
 
         </div>
 
-        <!-- TAB: RANKINGS -->
+        <!-- TAB: RANKINGS - CORREGIDO: Header con icono al lado -->
         <div id="rankings" class="tab-content">
             
             <div class="rankings-header">
                 <span>Clasificaciones</span>
-                <span class="participant-count">👤 47</span>
+                <span class="participant-count">
+                    <span>👤</span>
+                    <span>47</span>
+                </span>
             </div>
 
             <div class="ranking-list">
