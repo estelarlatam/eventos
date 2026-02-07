@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear un Regalo de Sticker - Evento Especial</title>
     <style>
+        /* [Mantén todo el CSS anterior igual, no lo repito para ahorrar espacio] */
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +20,6 @@
             padding-bottom: 2rem;
         }
 
-        /* Countdown Banner */
         .countdown-banner {
             background: rgba(255, 255, 255, 0.9);
             text-align: center;
@@ -43,7 +43,6 @@
             font-weight: 600;
         }
 
-        /* Hero Banner */
         .hero-banner {
             width: 100%;
             max-width: 800px;
@@ -59,7 +58,6 @@
             display: block;
         }
 
-        /* Tabs Navigation */
         .tabs-container {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
@@ -99,14 +97,12 @@
             background: rgba(255,255,255,0.4);
         }
 
-        /* Content Container */
         .content-wrapper {
             max-width: 800px;
             margin: 0 auto;
             padding: 1.5rem;
         }
 
-        /* Cards */
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
@@ -142,7 +138,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Awards Section */
         .awards-section {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
@@ -175,7 +170,6 @@
             padding: 1.5rem;
         }
 
-        /* Gift Image Container */
         .gift-image-container {
             width: 100%;
             border-radius: 12px;
@@ -190,7 +184,6 @@
             display: block;
         }
 
-        /* Gift Examples */
         .gift-examples-real {
             width: 100%;
             max-width: 300px;
@@ -214,7 +207,6 @@
             font-style: italic;
         }
 
-        /* Tables */
         .info-table {
             width: 100%;
             border-collapse: collapse;
@@ -243,7 +235,6 @@
             background: #f0f0f0;
         }
 
-        /* Schedule Section */
         .schedule-item {
             margin-bottom: 1.5rem;
             padding-left: 1.5rem;
@@ -280,7 +271,6 @@
             font-style: italic;
         }
 
-        /* Award Details List */
         .details-list {
             list-style: none;
             padding: 0;
@@ -319,7 +309,6 @@
             text-decoration: underline;
         }
 
-        /* Accordion */
         .accordion-container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
@@ -395,7 +384,6 @@
             line-height: 1.6;
         }
 
-        /* Rankings Header */
         .rankings-header {
             display: flex;
             align-items: center;
@@ -416,7 +404,6 @@
             margin-left: 0.5rem;
         }
 
-        /* User Ranking Card */
         .user-ranking-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
@@ -580,7 +567,6 @@
             font-size: 0.9rem;
         }
 
-        /* Form Styles */
         .form-group {
             margin-bottom: 1.25rem;
         }
@@ -623,7 +609,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Image Upload Styles */
         .image-upload-container {
             border: 2px dashed #ccc;
             border-radius: 12px;
@@ -690,7 +675,6 @@
             display: none;
         }
 
-        /* Button States */
         .enter-button-container {
             position: fixed;
             bottom: 0;
@@ -758,7 +742,6 @@
             cursor: not-allowed;
         }
 
-        /* Modales */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -864,7 +847,6 @@
             cursor: not-allowed;
         }
 
-        /* Loading Spinner */
         .spinner {
             display: inline-block;
             width: 20px;
@@ -879,7 +861,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Tab Content */
         .tab-content {
             display: none;
         }
@@ -894,12 +875,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Espacio para el botón fijo */
         .content-spacer {
             height: 100px;
         }
 
-        /* Alert Messages */
         .alert {
             padding: 1rem;
             border-radius: 12px;
@@ -919,7 +898,18 @@
             border: 1px solid #a5d6a7;
         }
 
-        /* Responsive */
+        .debug-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: none;
+        }
+
         @media (max-width: 640px) {
             .content-wrapper {
                 padding: 1rem;
@@ -946,6 +936,9 @@
     </style>
 </head>
 <body>
+
+    <!-- Debug Info (visible solo si hay errores) -->
+    <div id="debugInfo" class="debug-info"></div>
 
     <!-- Countdown Banner -->
     <div class="countdown-banner">
@@ -1294,11 +1287,12 @@
 
     <script>
         // ==========================================
-        // CONFIGURACIÓN
+        // CONFIGURACIÓN - IMPORTANTE: REEMPLAZA ESTA URL
         // ==========================================
         
         const CONFIG = {
-            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxap9hAQCXnCLa0Alyu5Kcwf02onpMvbX90HanScFbrRENdKYH8SwzmfFlN4RwI3AmArQ/exec', // Reemplaza con tu URL
+            // REEMPLAZA ESTO con tu URL real de Apps Script
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxap9hAQCXnCLa0Alyu5Kcwf02onpMvbX90HanScFbrRENdKYH8SwzmfFlN4RwI3AmArQ/exec',
             EVENT_NAME: 'Create-a-Sticker-Gift'
         };
 
@@ -1330,8 +1324,23 @@
             initializeDates();
             startCountdown();
             loadUserFromStorage();
-            fetchParticipants();
+            
+            // Verificar configuración
+            if (CONFIG.APPS_SCRIPT_URL.includes('XXXXXXXX')) {
+                showDebugInfo('⚠️ ERROR: Debes configurar APPS_SCRIPT_URL en el código');
+                document.getElementById('rankingList').innerHTML = 
+                    '<div class="ranking-item" style="justify-content: center; color: #e74c3c; padding: 2rem;">Error: URL de API no configurada. Contacta al administrador.</div>';
+            } else {
+                fetchParticipants();
+            }
         });
+
+        function showDebugInfo(message) {
+            const debugDiv = document.getElementById('debugInfo');
+            debugDiv.textContent = message;
+            debugDiv.style.display = 'block';
+            console.error(message);
+        }
 
         // ==========================================
         // FUNCIONES DE FECHA
@@ -1386,14 +1395,12 @@
         // UTILIDADES
         // ==========================================
         
-        // Formato ordinal (1st, 2nd, 3rd, 4th...)
         function getOrdinal(n) {
             const s = ["th", "st", "nd", "rd"];
             const v = n % 100;
             return n + (s[(v - 20) % 10] || s[v] || s[0]);
         }
 
-        // Formato de número con puntos (1.544.146)
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
@@ -1485,22 +1492,42 @@
         }
 
         // ==========================================
-        // API - PARTICIPANTES
+        // API - PARTICIPANTES (CORREGIDO)
         // ==========================================
         
         async function fetchParticipants() {
+            const list = document.getElementById('rankingList');
+            const countElement = document.getElementById('participantCount');
+            
             try {
-                const response = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=getParticipants&evento=${CONFIG.EVENT_NAME}`);
+                console.log('Cargando participantes desde:', CONFIG.APPS_SCRIPT_URL);
+                
+                // Usar no-cors mode para evitar problemas de CORS con Apps Script
+                const url = `${CONFIG.APPS_SCRIPT_URL}?action=getParticipants&evento=${encodeURIComponent(CONFIG.EVENT_NAME)}`;
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                console.log('Respuesta status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('Datos recibidos:', data);
                 
                 if (data.success) {
-                    userState.allParticipants = data.participants;
-                    document.getElementById('participantCount').textContent = 
-                        `${data.count} participantes`;
+                    userState.allParticipants = data.participants || [];
+                    countElement.textContent = `${data.count || 0} participantes`;
                     
-                    // Si el usuario está participando, actualizar sus datos
+                    // Actualizar datos del usuario si está participando
                     if (userState.isParticipating && userState.userEmail) {
-                        const userInList = data.participants.find(p => p.email === userState.userEmail);
+                        const userInList = userState.allParticipants.find(p => p.email === userState.userEmail);
                         if (userInList) {
                             userState.userData = userInList;
                             updateUserRankingCard();
@@ -1508,11 +1535,24 @@
                     }
                     
                     renderRanking();
+                } else {
+                    throw new Error(data.error || 'Error desconocido del servidor');
                 }
+                
             } catch (error) {
                 console.error('Error cargando participantes:', error);
-                document.getElementById('rankingList').innerHTML = 
-                    '<div class="ranking-item" style="justify-content: center; color: #888; padding: 2rem;">Error cargando datos</div>';
+                showDebugInfo(`Error: ${error.message}. Verifica que la URL de Apps Script sea correcta y esté desplegada.`);
+                
+                list.innerHTML = `
+                    <div class="ranking-item" style="flex-direction: column; align-items: center; color: #666; padding: 2rem; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+                        <div>Error cargando datos del ranking</div>
+                        <div style="font-size: 0.85rem; margin-top: 0.5rem; color: #999;">
+                            ${error.message}
+                        </div>
+                    </div>
+                `;
+                countElement.textContent = 'Error';
             }
         }
 
@@ -1553,6 +1593,8 @@
                     profileImage: userState.tempImage || ''
                 };
                 
+                console.log('Enviando datos:', payload);
+                
                 const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: {
@@ -1562,6 +1604,7 @@
                 });
                 
                 const result = await response.json();
+                console.log('Respuesta:', result);
                 
                 if (result.success) {
                     userState.isParticipating = true;
@@ -1588,7 +1631,7 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                showErrorModal('Error de conexión', 'No se pudo conectar con el servidor. Intenta de nuevo.');
+                showErrorModal('Error de conexión', 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
             } finally {
                 btn.disabled = false;
                 spinner.style.display = 'none';
@@ -1695,7 +1738,7 @@
             
             const user = userState.userData;
             
-            // Encontrar posición actual en la lista
+            // Encontrar posición actual
             const sorted = [...userState.allParticipants].sort((a, b) => b.score - a.score);
             const position = sorted.findIndex(p => p.email === user.email) + 1;
             
@@ -1723,14 +1766,21 @@
         
         function renderRanking() {
             const list = document.getElementById('rankingList');
+            
+            if (!userState.allParticipants || userState.allParticipants.length === 0) {
+                list.innerHTML = `
+                    <div class="ranking-item" style="flex-direction: column; align-items: center; color: #888; padding: 2rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                        <div>No hay participantes registrados aún</div>
+                        <div style="font-size: 0.85rem; margin-top: 0.5rem;">¡Sé el primero en unirte!</div>
+                    </div>
+                `;
+                return;
+            }
+            
             const start = (userState.currentPage - 1) * userState.itemsPerPage;
             const end = start + userState.itemsPerPage;
             const pageData = userState.allParticipants.slice(start, end);
-            
-            if (pageData.length === 0) {
-                list.innerHTML = '<div class="ranking-item" style="justify-content: center; color: #888;">No hay más participantes</div>';
-                return;
-            }
             
             list.innerHTML = pageData.map((user, index) => {
                 const actualRank = start + index + 1;
@@ -1783,12 +1833,16 @@
         function loadUserFromStorage() {
             const saved = localStorage.getItem('stickerEvent_user');
             if (saved) {
-                const data = JSON.parse(saved);
-                userState.userEmail = data.email;
-                userState.isParticipating = data.isParticipating;
-                
-                if (userState.isParticipating) {
-                    updateUIForParticipant();
+                try {
+                    const data = JSON.parse(saved);
+                    userState.userEmail = data.email;
+                    userState.isParticipating = data.isParticipating;
+                    
+                    if (userState.isParticipating) {
+                        updateUIForParticipant();
+                    }
+                } catch (e) {
+                    console.error('Error parsing stored user:', e);
                 }
             }
         }
