@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Eventos - Estelar Latam</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -17,6 +17,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             color: #333;
+            -webkit-font-smoothing: antialiased;
         }
 
         .app-container {
@@ -216,16 +217,74 @@
             transform: scale(0.98);
         }
 
+        /* CONTENEDOR DEL BANNER - RESPONSIVE */
+        .event-banner-container {
+            width: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Aspect ratio 3:1 para mantener proporción consistente */
+            aspect-ratio: 3 / 1;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Fallback para navegadores que no soportan aspect-ratio */
+        @supports not (aspect-ratio: 3 / 1) {
+            .event-banner-container {
+                height: 140px;
+            }
+        }
+
         .event-banner {
             width: 100%;
-            height: 140px;
-            object-fit: cover;
+            height: 100%;
+            object-fit: contain; /* Muestra la imagen completa sin recortar */
+            object-position: center;
             display: block;
             transition: transform 0.3s ease;
+            background-color: #f0f0f0; /* Fondo por si la imagen tiene transparencia */
         }
 
         .event-card:hover .event-banner {
-            transform: scale(1.05);
+            transform: scale(1.02);
+        }
+
+        /* Loading state */
+        .event-banner-container.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Error state */
+        .image-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+            background: #ff6b6b;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         .event-info {
@@ -236,6 +295,8 @@
             background: white;
             position: relative;
             z-index: 2;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .event-stats {
@@ -260,55 +321,39 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            font-variant-numeric: tabular-nums; /* Números monoespaciados para evitar saltos */
         }
 
         .event-time.ended {
             color: #636e72;
         }
 
-        /* Loading state for images */
-        .event-banner-container {
-            width: 100%;
-            height: 140px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow: hidden;
+        .event-time.finished {
+            color: #00b894;
+            animation: pulse 2s infinite;
         }
 
-        .event-banner-container.loading::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* Error state */
-        .image-error {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            text-align: center;
-            padding: 20px;
-            background: #ff6b6b;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         /* Responsive */
         @media (max-width: 480px) {
             .app-container {
                 max-width: 100%;
+            }
+            
+            .event-banner-container {
+                aspect-ratio: 16 / 9; /* Más alto en móvil para mejor visualización */
+                min-height: 160px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .event-info {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
@@ -386,29 +431,27 @@
     </div>
 
     <script>
-        // Configuración de GitHub - URLs CORREGIDAS
+        // Configuración de GitHub
         const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/estelarlatam/eventos/main';
         const GITHUB_INFO_URL = 'https://github.com/estelarlatam/eventos/tree/main/Informacion';
 
-        // Datos de eventos - RUTAS CORREGIDAS según tu estructura real
+        // Datos de eventos con fechas de finalización (ISO 8601)
         const eventsData = {
             current: [
                 {
                     id: 'sticker',
                     title: 'Create a Sticker Gift',
-                    // Ruta corregida: incluye /Imagenes/ y usa .png
                     image: 'Imagenes/Eventos/En-curso/Create-a-Sticker-Gift.png',
                     participants: 47,
-                    time: 'Termina en 1d 16:51:20',
+                    endDate: '2025-02-10T23:59:59', // Fecha de finalización
                     ended: false
                 },
                 {
                     id: 'gacha',
                     title: 'Win Gacha Tickets',
-                    // Ajusta esta ruta cuando subas la imagen real
                     image: 'Imagenes/Eventos/En-curso/Win-Gacha-Tickets.png',
                     participants: 593,
-                    time: 'Termina en 1d 16:51:20',
+                    endDate: '2025-02-09T18:30:00',
                     ended: false
                 }
             ],
@@ -418,7 +461,7 @@
                     title: 'Super Event',
                     image: 'Imagenes/Eventos/Proximos/Super-Event.png',
                     participants: 23,
-                    time: '10 feb, 12:00 a.m. - 16 feb, 6:00 a.m.',
+                    endDate: '2025-02-16T06:00:00',
                     ended: false
                 },
                 {
@@ -426,7 +469,7 @@
                     title: 'Choose Your Drip',
                     image: 'Imagenes/Eventos/Proximos/Choose-Your-Drip.png',
                     participants: 70,
-                    time: '10 feb, 12:00 a.m. - 16 feb, 6:00 a.m.',
+                    endDate: '2025-02-16T06:00:00',
                     ended: false
                 }
             ],
@@ -436,7 +479,7 @@
                     title: 'Your avatar printed on a Tee',
                     image: 'Imagenes/Eventos/Terminados/Avatar-Tee.png',
                     participants: 86,
-                    time: '27 ene, 12:00 a.m. - 2 feb, 6:00 a.m.',
+                    endDate: '2025-02-02T06:00:00', // Ya pasó
                     ended: true
                 },
                 {
@@ -444,7 +487,7 @@
                     title: 'Stand Out Dare to Shine',
                     image: 'Imagenes/Eventos/Terminados/Stand-Out.png',
                     participants: 502,
-                    time: '27 ene, 12:00 a.m. - 2 feb, 6:00 a.m.',
+                    endDate: '2025-02-02T06:00:00',
                     ended: true
                 },
                 {
@@ -452,11 +495,73 @@
                     title: 'Debut Grand Prix',
                     image: 'Imagenes/Eventos/Terminados/Debut-Grand-Prix.png',
                     participants: 36,
-                    time: '27 ene, 12:00 a.m. - 2 feb, 6:00 a.m.',
+                    endDate: '2025-02-02T06:00:00',
                     ended: true
                 }
             ]
         };
+
+        // Almacenar referencias a los elementos del contador para actualizarlos
+        const countdownElements = new Map();
+
+        // Función para calcular tiempo restante
+        function calculateTimeRemaining(endDate) {
+            const now = Date.now();
+            const end = new Date(endDate).getTime();
+            const difference = end - now;
+
+            if (difference <= 0) {
+                return null; // Tiempo agotado
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            return { days, hours, minutes, seconds };
+        }
+
+        // Función para formatear el contador
+        function formatCountdown(time) {
+            if (!time) return '¡Finalizado!';
+            
+            const { days, hours, minutes, seconds } = time;
+            
+            if (days > 0) {
+                return `Termina en ${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            } else {
+                return `Termina en ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            }
+        }
+
+        // Función para actualizar todos los contadores
+        function updateAllCountdowns() {
+            countdownElements.forEach((element, eventId) => {
+                const event = findEventById(eventId);
+                if (!event) return;
+
+                const timeRemaining = calculateTimeRemaining(event.endDate);
+                const timeString = formatCountdown(timeRemaining);
+                
+                element.textContent = timeString;
+                
+                // Cambiar estilo si finalizó
+                if (!timeRemaining) {
+                    element.classList.add('finished');
+                    element.classList.remove('ended');
+                }
+            });
+        }
+
+        // Buscar evento por ID en todas las categorías
+        function findEventById(id) {
+            for (const category in eventsData) {
+                const event = eventsData[category].find(e => e.id === id);
+                if (event) return event;
+            }
+            return null;
+        }
 
         // Función para generar slug de URL
         function generateSlug(title) {
@@ -471,23 +576,25 @@
 
         // Función para generar URL de imagen RAW de GitHub
         function generateImageURL(imagePath) {
-            // Usa la URL raw de GitHub para poder mostrar la imagen
             return `${GITHUB_RAW_URL}/${imagePath}`;
         }
 
         // Función para crear tarjeta de evento
-        function createEventCard(event) {
+        function createEventCard(event, category) {
             const imageUrl = generateImageURL(event.image);
             const eventUrl = generateEventURL(event.title);
             const timeClass = event.ended ? 'ended' : '';
-            
-            console.log('Cargando imagen desde:', imageUrl); // Para debugging
             
             const card = document.createElement('a');
             card.className = 'event-card';
             card.href = eventUrl;
             card.target = '_blank';
             card.rel = 'noopener noreferrer';
+            card.dataset.eventId = event.id; // Guardar ID para referencia
+            
+            // Calcular tiempo inicial
+            const initialTime = calculateTimeRemaining(event.endDate);
+            const initialTimeString = formatCountdown(initialTime);
             
             card.innerHTML = `
                 <div class="event-banner-container loading">
@@ -497,6 +604,7 @@
                         class="event-banner"
                         onload="this.parentElement.classList.remove('loading')"
                         onerror="handleImageError(this, '${event.title}')"
+                        loading="lazy"
                     >
                 </div>
                 <div class="event-info">
@@ -504,14 +612,18 @@
                         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         <span>${event.participants}</span>
                     </div>
-                    <div class="event-time ${timeClass}">
+                    <div class="event-time ${timeClass}" data-countdown="${event.id}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
                         </svg>
-                        <span>${event.time}</span>
+                        <span class="countdown-text">${initialTimeString}</span>
                     </div>
                 </div>
             `;
+            
+            // Guardar referencia al elemento del contador
+            const countdownElement = card.querySelector('.countdown-text');
+            countdownElements.set(event.id, countdownElement);
             
             // Prevenir comportamiento por defecto y abrir en nueva pestaña
             card.addEventListener('click', function(e) {
@@ -522,7 +634,7 @@
             return card;
         }
 
-        // Manejador de errores de imagen mejorado
+        // Manejador de errores de imagen
         function handleImageError(img, title) {
             console.error('Error cargando imagen:', img.src);
             const container = img.parentElement;
@@ -543,19 +655,19 @@
             // Renderizar eventos en curso
             const currentContainer = document.getElementById('currentEvents');
             eventsData.current.forEach(event => {
-                currentContainer.appendChild(createEventCard(event));
+                currentContainer.appendChild(createEventCard(event, 'current'));
             });
             
             // Renderizar eventos próximos
             const upcomingContainer = document.getElementById('upcomingEvents');
             eventsData.upcoming.forEach(event => {
-                upcomingContainer.appendChild(createEventCard(event));
+                upcomingContainer.appendChild(createEventCard(event, 'upcoming'));
             });
             
             // Renderizar eventos terminados
             const endedContainer = document.getElementById('endedEvents');
             eventsData.ended.forEach(event => {
-                endedContainer.appendChild(createEventCard(event));
+                endedContainer.appendChild(createEventCard(event, 'ended'));
             });
         }
 
@@ -577,10 +689,21 @@
         // Inicializar al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             renderEvents();
+            
+            // Iniciar el contador global que actualiza cada segundo
+            setInterval(updateAllCountdowns, 1000);
+            
+            // Actualización inmediata para evitar delay inicial
+            updateAllCountdowns();
         });
 
         // Touch feedback para móvil
         document.addEventListener('touchstart', function() {}, {passive: true});
+        
+        // Limpiar intervalos al salir de la página (buena práctica)
+        window.addEventListener('beforeunload', function() {
+            // Los intervalos se limpian automáticamente al cerrar la página
+        });
     </script>
 </body>
 </html>
