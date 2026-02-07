@@ -432,7 +432,7 @@
             font-size: 1.25rem;
             font-weight: 700;
             color: #333;
-            min-width: 50px;
+            min-width: 60px;
         }
 
         .user-avatar {
@@ -593,6 +593,10 @@
             font-size: 0.9rem;
         }
 
+        .form-label .required {
+            color: #e74c3c;
+        }
+
         .form-input {
             width: 100%;
             padding: 0.875rem 1rem;
@@ -703,7 +707,7 @@
         }
 
         .btn-enter {
-            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
             color: white;
             border: none;
             padding: 1rem 4rem;
@@ -711,7 +715,7 @@
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
             transition: all 0.3s;
             width: 100%;
             max-width: 400px;
@@ -719,7 +723,7 @@
 
         .btn-enter:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.6);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6);
         }
 
         .btn-enter:disabled {
@@ -777,7 +781,7 @@
             background: white;
             border-radius: 20px;
             padding: 2rem;
-            max-width: 400px;
+            max-width: 450px;
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -798,7 +802,7 @@
         }
 
         .modal-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             color: #333;
             margin-bottom: 1.5rem;
             font-weight: 700;
@@ -841,13 +845,14 @@
         .btn-ok-full {
             background: #2196f3;
             color: white;
-            padding: 0.75rem 3rem;
+            padding: 0.875rem 2rem;
             border-radius: 25px;
             border: none;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 1rem;
             width: 100%;
+            margin-top: 0.5rem;
         }
 
         .btn-ok-full:hover {
@@ -931,6 +936,11 @@
 
             .modal {
                 padding: 1.5rem;
+            }
+            
+            .user-rank-position {
+                font-size: 1rem;
+                min-width: 50px;
             }
         }
     </style>
@@ -1138,7 +1148,7 @@
         <div id="rankings" class="tab-content">
             
             <!-- User Ranking Card -->
-            <div class="user-ranking-card" id="userRanking">
+            <div class="user-ranking-card" id="userRanking" style="display: none;">
                 <div class="user-rank-position" id="userRank">--</div>
                 <div class="user-avatar" id="userAvatar">
                     <span id="userInitial">?</span>
@@ -1153,6 +1163,12 @@
                 </div>
             </div>
 
+            <!-- Not Participating Message -->
+            <div class="card" id="notParticipatingMsg" style="text-align: center; padding: 2rem;">
+                <p style="color: #666; margin-bottom: 1rem;">Aún no participas en este evento</p>
+                <p style="font-size: 0.9rem; color: #888;">Únete para aparecer en el ranking</p>
+            </div>
+
             <!-- Rankings Header -->
             <div class="rankings-header">
                 <span>🏆</span>
@@ -1165,7 +1181,6 @@
 
             <!-- Ranking List -->
             <div class="ranking-list" id="rankingList">
-                <!-- Los items se generarán dinámicamente con JavaScript -->
                 <div class="ranking-item" style="justify-content: center; color: #888; padding: 2rem;">
                     Cargando clasificación...
                 </div>
@@ -1192,15 +1207,49 @@
     <!-- Enter Event Modal -->
     <div class="modal-overlay" id="enterModal">
         <div class="modal">
-            <h3 class="modal-title">🎉 ¿Participar en el evento?</h3>
-            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">
-                Al participar, aceptas los términos y condiciones del evento. Tu puntuación comenzará a contar inmediatamente.
-            </p>
-            <div class="modal-buttons">
-                <button class="btn-modal btn-cancel" onclick="closeModal('enterModal')">Cancelar</button>
-                <button class="btn-modal btn-ok" onclick="confirmEnter()" id="confirmEnterBtn">
+            <h3 class="modal-title">🎉 Únete al Evento</h3>
+            
+            <!-- Image Upload -->
+            <div class="form-group" style="text-align: center;">
+                <div class="image-upload-container" id="uploadContainer" onclick="document.getElementById('fileInput').click()">
+                    <img class="image-upload-preview" id="uploadPreview" alt="Preview">
+                    <div class="image-upload-text">
+                        <span class="icon">📷</span>
+                        Foto de Perfil (Opcional)<br>
+                        <small style="color: #999;">Toca para subir una foto</small>
+                    </div>
+                    <div class="image-upload-change">Cambiar imagen</div>
+                </div>
+                <input type="file" class="image-upload-input" id="fileInput" accept="image/jpeg,image/png,image/jpg" onchange="handleFileSelect(event)">
+                <p class="form-hint">Formatos: JPG, PNG. Máximo 2MB</p>
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label class="form-label">Nombre de Usuario <span class="required">*</span></label>
+                <input type="text" class="form-input" id="regUsername" placeholder="Tu nombre de usuario" required>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label class="form-label">Correo Electrónico <span class="required">*</span></label>
+                <input type="email" class="form-input" id="regEmail" placeholder="tu@email.com" required>
+            </div>
+
+            <!-- Profile Link -->
+            <div class="form-group">
+                <label class="form-label">Link del Perfil <span class="required">*</span></label>
+                <input type="url" class="form-input" id="regProfileLink" placeholder="https://estelar.app/usuario" required>
+                <p class="form-hint">URL completa de tu perfil en Estelar</p>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <button class="btn-ok-full" onclick="confirmEnter()" id="confirmEnterBtn">
                     <span id="enterSpinner" class="spinner" style="display: none;"></span>
-                    <span id="enterText">Confirmar</span>
+                    <span id="enterText">Confirmar Registro</span>
+                </button>
+                <button class="btn-cancel" onclick="closeModal('enterModal')" style="margin-top: 0.5rem; width: 100%; padding: 0.75rem;">
+                    Cancelar
                 </button>
             </div>
         </div>
@@ -1233,84 +1282,61 @@
         </div>
     </div>
 
-    <!-- Image Upload Modal (para el registro) -->
-    <div class="modal-overlay" id="uploadModal">
-        <div class="modal" style="max-width: 500px;">
-            <h3 class="modal-title">📸 Sube tu avatar</h3>
-            <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">
-                Sube una imagen para personalizar tu perfil en el evento (opcional).
-            </p>
-            
-            <div class="image-upload-container" id="uploadContainer" onclick="document.getElementById('fileInput').click()">
-                <img class="image-upload-preview" id="uploadPreview" alt="Preview">
-                <div class="image-upload-text">
-                    <span class="icon">📷</span>
-                    Haz clic para subir una imagen<br>
-                    <small style="color: #999;">PNG, JPG hasta 5MB</small>
-                </div>
-                <div class="image-upload-change">Cambiar imagen</div>
-            </div>
-            <input type="file" class="image-upload-input" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
-            
-            <div style="margin-top: 1.5rem;">
-                <button class="btn-ok-full" onclick="completeRegistration()" id="completeRegBtn">
-                    <span id="regSpinner" class="spinner" style="display: none;"></span>
-                    <span id="regText">Completar Registro</span>
-                </button>
-                <button class="btn-cancel" onclick="skipUpload()" style="margin-top: 0.5rem; width: 100%; padding: 0.75rem;">
-                    Omitir por ahora
-                </button>
-            </div>
+    <!-- Error Modal -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+            <h3 class="modal-title" id="errorTitle">Error</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;" id="errorMessage">Ha ocurrido un error.</p>
+            <button class="btn-ok-full" onclick="closeModal('errorModal')" style="background: #f44336;">Aceptar</button>
         </div>
     </div>
 
     <script>
-        // Configuración del evento
+        // ==========================================
+        // CONFIGURACIÓN
+        // ==========================================
+        
+        const CONFIG = {
+            APPS_SCRIPT_URL: 'TU_URL_DE_APPS_SCRIPT_AQUI', // Reemplaza con tu URL
+            EVENT_NAME: 'Create-a-Sticker-Gift'
+        };
+
         const EVENT_CONFIG = {
             registrationStart: new Date('2025-01-15T00:00:00-05:00'),
             registrationEnd: new Date('2025-02-10T23:59:59-05:00'),
             eventStart: new Date('2025-01-20T00:00:00-05:00'),
-            eventEnd: new Date('2025-02-10T23:59:59-05:00'),
-            prizeContactDeadline: new Date('2026-02-10T23:59:59-05:00'),
-            giftSubmissionDeadline: new Date('2026-02-22T09:59:59-05:00')
+            eventEnd: new Date('2025-02-10T23:59:59-05:00')
         };
 
-        // Estado del usuario
+        // ==========================================
+        // ESTADO DEL USUARIO
+        // ==========================================
+        
         let userState = {
             isParticipating: false,
-            userId: null,
-            userName: 'Invitado',
-            avatar: null,
-            score: 0,
-            rank: null,
+            userEmail: null,
+            userData: null,
             currentPage: 1,
-            itemsPerPage: 10
+            itemsPerPage: 10,
+            allParticipants: []
         };
 
-        // Datos de ejemplo para el ranking (en producción vendrían de una API)
-        let rankingData = [
-            { id: 1, name: "StreamerPro123", score: 1543200, avatar: null, verified: true },
-            { id: 2, name: "CreativeSoul", score: 1234500, avatar: null, verified: true },
-            { id: 3, name: "DesignMaster", score: 987600, avatar: null, verified: false },
-            { id: 4, name: "ArtisticMind", score: 876500, avatar: null, verified: true },
-            { id: 5, name: "PixelPerfect", score: 765400, avatar: null, verified: false },
-            { id: 6, name: "CreativeGenius", score: 654300, avatar: null, verified: false },
-            { id: 7, name: "StreamStar", score: 543200, avatar: null, verified: true },
-            { id: 8, name: "GiftCreator", score: 432100, avatar: null, verified: false },
-            { id: 9, name: "DesignWizard", score: 321000, avatar: null, verified: false },
-            { id: 10, name: "ArtLover", score: 210900, avatar: null, verified: false }
-        ];
-
-        // Inicialización
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        
         document.addEventListener('DOMContentLoaded', function() {
             initializeDates();
             startCountdown();
-            loadUserState();
-            renderRanking();
-            updateParticipantCount();
+            loadUserFromStorage();
+            fetchParticipants();
         });
 
-        // Funciones de utilidad para fechas
+        // ==========================================
+        // FUNCIONES DE FECHA
+        // ==========================================
+        
         function formatDate(date) {
             const options = { 
                 year: 'numeric', 
@@ -1330,7 +1356,6 @@
                 `${formatDate(EVENT_CONFIG.eventStart)} - ${formatDate(EVENT_CONFIG.eventEnd)}`;
         }
 
-        // Countdown
         function startCountdown() {
             function updateCountdown() {
                 const now = new Date();
@@ -1357,45 +1382,60 @@
             setInterval(updateCountdown, 1000);
         }
 
-        // Tabs
+        // ==========================================
+        // UTILIDADES
+        // ==========================================
+        
+        // Formato ordinal (1st, 2nd, 3rd, 4th...)
+        function getOrdinal(n) {
+            const s = ["th", "st", "nd", "rd"];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        // Formato de número con puntos (1.544.146)
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // ==========================================
+        // TABS Y UI
+        // ==========================================
+        
         function switchTab(tabName) {
-            // Ocultar todos los contenidos
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             
-            // Desactivar todos los tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // Activar el tab seleccionado
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
             
-            // Si es rankings, actualizar
             if (tabName === 'rankings') {
                 renderRanking();
             }
         }
 
-        // Accordion
         function toggleAccordion(button) {
             const item = button.parentElement;
             const isActive = item.classList.contains('active');
             
-            // Cerrar todos
             document.querySelectorAll('.accordion-item').forEach(acc => {
                 acc.classList.remove('active');
             });
             
-            // Abrir el clickeado si no estaba activo
             if (!isActive) {
                 item.classList.add('active');
             }
         }
 
-        // Modales
+        // ==========================================
+        // MODALES
+        // ==========================================
+        
         function showEnterModal() {
             if (userState.isParticipating) return;
             document.getElementById('enterModal').classList.add('active');
@@ -1411,35 +1451,22 @@
             document.getElementById('successModal').classList.add('active');
         }
 
-        // Participación en el evento
-        function confirmEnter() {
-            const btn = document.getElementById('confirmEnterBtn');
-            const spinner = document.getElementById('enterSpinner');
-            const text = document.getElementById('enterText');
-            
-            btn.disabled = true;
-            spinner.style.display = 'inline-block';
-            text.textContent = 'Procesando...';
-            
-            // Simular llamada a API
-            setTimeout(() => {
-                closeModal('enterModal');
-                document.getElementById('uploadModal').classList.add('active');
-                
-                // Resetear botón
-                btn.disabled = false;
-                spinner.style.display = 'none';
-                text.textContent = 'Confirmar';
-            }, 1500);
+        function showErrorModal(title, message) {
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').classList.add('active');
         }
 
-        // Manejo de archivos
+        // ==========================================
+        // MANEJO DE ARCHIVOS
+        // ==========================================
+        
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
             
-            if (file.size > 5 * 1024 * 1024) {
-                alert('El archivo es demasiado grande. Máximo 5MB permitido.');
+            if (file.size > 2 * 1024 * 1024) {
+                showErrorModal('Archivo muy grande', 'El máximo permitido es 2MB');
                 return;
             }
             
@@ -1452,52 +1479,128 @@
                 preview.classList.add('active');
                 container.classList.add('has-image');
                 
-                userState.avatar = e.target.result;
+                userState.tempImage = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function skipUpload() {
-            completeRegistration();
+        // ==========================================
+        // API - PARTICIPANTES
+        // ==========================================
+        
+        async function fetchParticipants() {
+            try {
+                const response = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=getParticipants&evento=${CONFIG.EVENT_NAME}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    userState.allParticipants = data.participants;
+                    document.getElementById('participantCount').textContent = 
+                        `${data.count} participantes`;
+                    
+                    // Si el usuario está participando, actualizar sus datos
+                    if (userState.isParticipating && userState.userEmail) {
+                        const userInList = data.participants.find(p => p.email === userState.userEmail);
+                        if (userInList) {
+                            userState.userData = userInList;
+                            updateUserRankingCard();
+                        }
+                    }
+                    
+                    renderRanking();
+                }
+            } catch (error) {
+                console.error('Error cargando participantes:', error);
+                document.getElementById('rankingList').innerHTML = 
+                    '<div class="ranking-item" style="justify-content: center; color: #888; padding: 2rem;">Error cargando datos</div>';
+            }
         }
 
-        function completeRegistration() {
-            const btn = document.getElementById('completeRegBtn');
-            const spinner = document.getElementById('regSpinner');
-            const text = document.getElementById('regText');
+        // ==========================================
+        // REGISTRO (JOIN)
+        // ==========================================
+        
+        async function confirmEnter() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const profileLink = document.getElementById('regProfileLink').value.trim();
+            
+            if (!username || !email || !profileLink) {
+                showErrorModal('Campos incompletos', 'Por favor completa todos los campos obligatorios');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showErrorModal('Email inválido', 'Por favor ingresa un correo válido');
+                return;
+            }
+            
+            const btn = document.getElementById('confirmEnterBtn');
+            const spinner = document.getElementById('enterSpinner');
+            const text = document.getElementById('enterText');
             
             btn.disabled = true;
             spinner.style.display = 'inline-block';
             text.textContent = 'Registrando...';
             
-            setTimeout(() => {
-                userState.isParticipating = true;
-                userState.userId = Math.floor(Math.random() * 10000);
-                userState.score = 0;
-                userState.rank = rankingData.length + 1;
+            try {
+                const payload = {
+                    action: 'join',
+                    username: username,
+                    email: email,
+                    profileLink: profileLink,
+                    evento: CONFIG.EVENT_NAME,
+                    profileImage: userState.tempImage || ''
+                };
                 
-                // Agregar usuario al ranking
-                rankingData.push({
-                    id: userState.userId,
-                    name: userState.userName,
-                    score: 0,
-                    avatar: userState.avatar,
-                    verified: false
+                const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(payload)
                 });
                 
-                saveUserState();
-                updateUIForParticipant();
-                closeModal('uploadModal');
-                showSuccessModal('¡Bienvenido!', 'Te has registrado exitosamente en el evento. ¡Mucha suerte!');
+                const result = await response.json();
                 
+                if (result.success) {
+                    userState.isParticipating = true;
+                    userState.userEmail = email;
+                    userState.userData = {
+                        username: username,
+                        email: email,
+                        profileLink: profileLink,
+                        profileImage: result.imageUrl || '',
+                        score: 0,
+                        rank: userState.allParticipants.length + 1
+                    };
+                    
+                    saveUserToStorage();
+                    updateUIForParticipant();
+                    closeModal('enterModal');
+                    showSuccessModal('¡Bienvenido!', 'Te has registrado exitosamente en el evento. ¡Mucha suerte!');
+                    
+                    // Recargar participantes
+                    await fetchParticipants();
+                } else {
+                    showErrorModal('Error', result.error || 'No se pudo completar el registro');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showErrorModal('Error de conexión', 'No se pudo conectar con el servidor. Intenta de nuevo.');
+            } finally {
                 btn.disabled = false;
                 spinner.style.display = 'none';
-                text.textContent = 'Completar Registro';
-            }, 1500);
+                text.textContent = 'Confirmar Registro';
+            }
         }
 
-        // Abandonar evento
-        function confirmLeave() {
+        // ==========================================
+        // SALIR DEL EVENTO
+        // ==========================================
+        
+        async function confirmLeave() {
             const btn = document.getElementById('confirmLeaveBtn');
             const spinner = document.getElementById('leaveSpinner');
             const text = document.getElementById('leaveText');
@@ -1506,25 +1609,48 @@
             spinner.style.display = 'inline-block';
             text.textContent = 'Procesando...';
             
-            setTimeout(() => {
-                userState.isParticipating = false;
-                userState.score = 0;
+            try {
+                const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify({
+                        action: 'leave',
+                        email: userState.userEmail,
+                        evento: CONFIG.EVENT_NAME
+                    })
+                });
                 
-                // Eliminar del ranking
-                rankingData = rankingData.filter(u => u.id !== userState.userId);
+                const result = await response.json();
                 
-                saveUserState();
-                updateUIForNonParticipant();
-                closeModal('leaveModal');
-                showSuccessModal('Evento Abandonado', 'Has salido del evento. Puedes volver a participar mientras esté abierto.');
+                if (result.success) {
+                    userState.isParticipating = false;
+                    userState.userData = null;
+                    removeUserFromStorage();
+                    updateUIForNonParticipant();
+                    closeModal('leaveModal');
+                    showSuccessModal('Evento Abandonado', 'Has salido del evento. Puedes volver a participar mientras esté abierto.');
+                    
+                    await fetchParticipants();
+                } else {
+                    showErrorModal('Error', result.error || 'No se pudo procesar la solicitud');
+                }
                 
+            } catch (error) {
+                console.error('Error:', error);
+                showErrorModal('Error de conexión', 'No se pudo conectar con el servidor');
+            } finally {
                 btn.disabled = false;
                 spinner.style.display = 'none';
                 text.textContent = 'Abandonar';
-            }, 1500);
+            }
         }
 
-        // Actualizar UI según estado
+        // ==========================================
+        // ACTUALIZAR UI
+        // ==========================================
+        
         function updateUIForParticipant() {
             const btn = document.getElementById('enterBtn');
             const container = document.getElementById('buttonContainer');
@@ -1533,7 +1659,6 @@
             btn.textContent = '✓ Participando';
             btn.disabled = true;
             
-            // Agregar botón de abandonar
             if (!document.getElementById('leaveBtn')) {
                 const leaveBtn = document.createElement('button');
                 leaveBtn.id = 'leaveBtn';
@@ -1542,6 +1667,9 @@
                 leaveBtn.onclick = () => document.getElementById('leaveModal').classList.add('active');
                 container.appendChild(leaveBtn);
             }
+            
+            document.getElementById('notParticipatingMsg').style.display = 'none';
+            document.getElementById('userRanking').style.display = 'flex';
             
             updateUserRankingCard();
         }
@@ -1558,19 +1686,46 @@
                 leaveBtn.remove();
             }
             
-            // Resetear tarjeta de usuario
-            document.getElementById('userRank').textContent = '--';
-            document.getElementById('userScore').textContent = '0 puntos';
-            document.getElementById('userAvatarImg').style.display = 'none';
-            document.getElementById('userInitial').textContent = '?';
+            document.getElementById('notParticipatingMsg').style.display = 'block';
+            document.getElementById('userRanking').style.display = 'none';
         }
 
-        // Ranking y paginación
+        function updateUserRankingCard() {
+            if (!userState.isParticipating || !userState.userData) return;
+            
+            const user = userState.userData;
+            
+            // Encontrar posición actual en la lista
+            const sorted = [...userState.allParticipants].sort((a, b) => b.score - a.score);
+            const position = sorted.findIndex(p => p.email === user.email) + 1;
+            
+            document.getElementById('userRank').textContent = getOrdinal(position);
+            document.getElementById('userNameLink').textContent = user.username;
+            document.getElementById('userScore').textContent = `${formatNumber(user.score)} puntos`;
+            
+            const avatarImg = document.getElementById('userAvatarImg');
+            const initial = document.getElementById('userInitial');
+            
+            if (user.profileImage) {
+                avatarImg.src = user.profileImage;
+                avatarImg.style.display = 'block';
+                initial.style.display = 'none';
+            } else {
+                avatarImg.style.display = 'none';
+                initial.style.display = 'block';
+                initial.textContent = user.username.charAt(0).toUpperCase();
+            }
+        }
+
+        // ==========================================
+        // RENDERIZAR RANKING
+        // ==========================================
+        
         function renderRanking() {
             const list = document.getElementById('rankingList');
             const start = (userState.currentPage - 1) * userState.itemsPerPage;
             const end = start + userState.itemsPerPage;
-            const pageData = rankingData.slice(start, end);
+            const pageData = userState.allParticipants.slice(start, end);
             
             if (pageData.length === 0) {
                 list.innerHTML = '<div class="ranking-item" style="justify-content: center; color: #888;">No hay más participantes</div>';
@@ -1583,10 +1738,9 @@
                                  actualRank === 2 ? 'rank-2' : 
                                  actualRank === 3 ? 'rank-3' : 'rank-other';
                 
-                const verifiedIcon = user.verified ? '<span style="color: #3498db; margin-left: 0.25rem;">✓</span>' : '';
-                const avatarContent = user.avatar ? 
-                    `<img src="${user.avatar}" alt="${user.name}">` : 
-                    user.name.charAt(0).toUpperCase();
+                const avatarContent = user.profileImage ? 
+                    `<img src="${user.profileImage}" alt="${user.username}" onerror="this.style.display='none'; this.parentElement.textContent='${user.username.charAt(0).toUpperCase()}'">` : 
+                    user.username.charAt(0).toUpperCase();
                 
                 return `
                     <div class="ranking-item">
@@ -1594,11 +1748,10 @@
                         <div class="rank-avatar">${avatarContent}</div>
                         <div class="rank-info">
                             <div class="rank-name">
-                                <a href="#">${user.name}</a>
-                                ${verifiedIcon}
+                                <a href="${user.profileLink}" target="_blank">${user.username}</a>
                             </div>
                         </div>
-                        <div class="rank-score">${user.score.toLocaleString()} pts</div>
+                        <div class="rank-score">${formatNumber(user.score)} pts</div>
                     </div>
                 `;
             }).join('');
@@ -1607,7 +1760,7 @@
         }
 
         function changePage(direction) {
-            const maxPage = Math.ceil(rankingData.length / userState.itemsPerPage);
+            const maxPage = Math.ceil(userState.allParticipants.length / userState.itemsPerPage);
             const newPage = userState.currentPage + direction;
             
             if (newPage >= 1 && newPage <= maxPage) {
@@ -1616,50 +1769,38 @@
             }
         }
 
-        function updateParticipantCount() {
-            document.getElementById('participantCount').textContent = 
-                `${rankingData.length.toLocaleString()} participantes`;
+        // ==========================================
+        // LOCAL STORAGE
+        // ==========================================
+        
+        function saveUserToStorage() {
+            localStorage.setItem('stickerEvent_user', JSON.stringify({
+                email: userState.userEmail,
+                isParticipating: userState.isParticipating
+            }));
         }
 
-        function updateUserRankingCard() {
-            if (!userState.isParticipating) return;
-            
-            // Encontrar posición actual del usuario
-            const userIndex = rankingData.findIndex(u => u.id === userState.userId);
-            if (userIndex !== -1) {
-                userState.rank = userIndex + 1;
-                userState.score = rankingData[userIndex].score;
-            }
-            
-            document.getElementById('userRank').textContent = `#${userState.rank}`;
-            document.getElementById('userNameLink').textContent = userState.userName;
-            document.getElementById('userScore').textContent = `${userState.score.toLocaleString()} puntos`;
-            
-            if (userState.avatar) {
-                document.getElementById('userAvatarImg').src = userState.avatar;
-                document.getElementById('userAvatarImg').style.display = 'block';
-                document.getElementById('userInitial').style.display = 'none';
-            } else {
-                document.getElementById('userInitial').textContent = userState.userName.charAt(0).toUpperCase();
-            }
-        }
-
-        // Persistencia local
-        function saveUserState() {
-            localStorage.setItem('stickerEventUserState', JSON.stringify(userState));
-        }
-
-        function loadUserState() {
-            const saved = localStorage.getItem('stickerEventUserState');
+        function loadUserFromStorage() {
+            const saved = localStorage.getItem('stickerEvent_user');
             if (saved) {
-                userState = JSON.parse(saved);
+                const data = JSON.parse(saved);
+                userState.userEmail = data.email;
+                userState.isParticipating = data.isParticipating;
+                
                 if (userState.isParticipating) {
                     updateUIForParticipant();
                 }
             }
         }
 
-        // Cerrar modales al hacer clic fuera
+        function removeUserFromStorage() {
+            localStorage.removeItem('stickerEvent_user');
+        }
+
+        // ==========================================
+        // CERRAR MODALES AL HACER CLICK FUERA
+        // ==========================================
+        
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -1667,32 +1808,6 @@
                 }
             });
         });
-
-        // Simular actualizaciones en tiempo real del ranking
-        setInterval(() => {
-            if (Math.random() > 0.7 && rankingData.length > 0) {
-                // Actualizar puntajes aleatoriamente
-                const randomUser = rankingData[Math.floor(Math.random() * rankingData.length)];
-                randomUser.score += Math.floor(Math.random() * 1000);
-                
-                // Reordenar
-                rankingData.sort((a, b) => b.score - a.score);
-                
-                // Actualizar UI si estamos en la pestaña de rankings
-                if (document.getElementById('rankings').classList.contains('active')) {
-                    renderRanking();
-                }
-                
-                // Actualizar contador de participantes
-                updateParticipantCount();
-                
-                // Si el usuario está participando, actualizar su tarjeta
-                if (userState.isParticipating) {
-                    updateUserRankingCard();
-                }
-            }
-        }, 5000);
     </script>
 </body>
 </html>
-                    
