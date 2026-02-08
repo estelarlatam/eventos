@@ -1465,6 +1465,10 @@
                 document.getElementById('uploadPreview').classList.add('active');
                 document.getElementById('uploadContainer').classList.add('has-image');
                 userState.tempImage = evt.target.result;
+                console.log('Imagen cargada en base64, tamaño:', evt.target.result.length);
+            };
+            reader.onerror = function() {
+                showError('Error', 'No se pudo leer la imagen');
             };
             reader.readAsDataURL(file);
         }
@@ -1503,7 +1507,9 @@
                 
                 // Limpiar
                 delete window[callbackName];
-                document.head.removeChild(script);
+                if (script.parentNode) {
+                    document.head.removeChild(script);
+                }
             };
             
             script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getParticipants&evento=${encodeURIComponent(CONFIG.EVENT_NAME)}&callback=${callbackName}`;
@@ -1517,95 +1523,95 @@
             document.head.appendChild(script);
         }
 
-// ==========================================
-// REGISTRO (POST) - CORREGIDO
-// ==========================================
-
-async function confirmEnter() {
-    const username = document.getElementById('regUsername').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const profileLink = document.getElementById('regProfileLink').value.trim();
-    
-    if (!username || !email || !profileLink) {
-        showError('Campos incompletos', 'Completa todos los campos obligatorios');
-        return;
-    }
-    
-    if (!email.includes('@')) {
-        showError('Email inválido', 'Ingresa un correo válido');
-        return;
-    }
-    
-    const btn = document.getElementById('confirmEnterBtn');
-    const spinner = document.getElementById('enterSpinner');
-    const text = document.getElementById('enterText');
-    
-    btn.disabled = true;
-    spinner.style.display = 'inline-block';
-    text.textContent = 'Registrando...';
-    
-    try {
-        // Preparar datos incluyendo la imagen base64
-        const requestData = {
-            action: 'join',
-            username: username,
-            email: email,
-            profileLink: profileLink,
-            evento: CONFIG.EVENT_NAME,
-            profileImage: userState.tempImage || '' // Enviar imagen base64 o vacío
-        };
+        // ==========================================
+        // REGISTRO (POST) - CORREGIDO
+        // ==========================================
         
-        console.log('Enviando datos:', {
-            ...requestData,
-            profileImage: requestData.profileImage ? 'IMAGEN_BASE64_PRESENTE' : 'SIN_IMAGEN'
-        });
-        
-        const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(requestData)
-        });
-        
-        const result = await response.json();
-        console.log('Respuesta del servidor:', result);
-        
-        if (result.success) {
-            userState.isParticipating = true;
-            userState.userEmail = email;
-            userState.userData = {
-                username: username,
-                email: email,
-                profileLink: profileLink,
-                profileImage: result.imageUrl || '',
-                score: 0
-            };
+        async function confirmEnter() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const profileLink = document.getElementById('regProfileLink').value.trim();
             
-            saveUserToStorage();
-            updateUIForParticipant();
-            closeModal('enterModal');
+            if (!username || !email || !profileLink) {
+                showError('Campos incompletos', 'Completa todos los campos obligatorios');
+                return;
+            }
             
-            // Mensaje diferente si se registró sin foto
-            const successMsg = result.hasImage 
-                ? '¡Registro exitoso con foto de perfil!' 
-                : (result.message || '¡Registro exitoso! (Sin foto)');
+            if (!email.includes('@')) {
+                showError('Email inválido', 'Ingresa un correo válido');
+                return;
+            }
             
-            showSuccess('¡Bienvenido!', successMsg);
-            fetchParticipantsJSONP(); // Recargar lista
-        } else {
-            showError('Error', result.error || 'No se pudo completar el registro');
+            const btn = document.getElementById('confirmEnterBtn');
+            const spinner = document.getElementById('enterSpinner');
+            const text = document.getElementById('enterText');
+            
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            text.textContent = 'Registrando...';
+            
+            try {
+                // Preparar datos incluyendo la imagen base64
+                const requestData = {
+                    action: 'join',
+                    username: username,
+                    email: email,
+                    profileLink: profileLink,
+                    evento: CONFIG.EVENT_NAME,
+                    profileImage: userState.tempImage || '' // Enviar imagen base64 o vacío
+                };
+                
+                console.log('Enviando datos:', {
+                    ...requestData,
+                    profileImage: requestData.profileImage ? 'IMAGEN_BASE64_PRESENTE (' + requestData.profileImage.length + ' chars)' : 'SIN_IMAGEN'
+                });
+                
+                const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                console.log('Respuesta del servidor:', result);
+                
+                if (result.success) {
+                    userState.isParticipating = true;
+                    userState.userEmail = email;
+                    userState.userData = {
+                        username: username,
+                        email: email,
+                        profileLink: profileLink,
+                        profileImage: result.imageUrl || '',
+                        score: 0
+                    };
+                    
+                    saveUserToStorage();
+                    updateUIForParticipant();
+                    closeModal('enterModal');
+                    
+                    // Mensaje diferente si se registró sin foto
+                    const successMsg = result.hasImage 
+                        ? '¡Registro exitoso con foto de perfil!' 
+                        : (result.message || '¡Registro exitoso! (Sin foto)');
+                    
+                    showSuccess('¡Bienvenido!', successMsg);
+                    fetchParticipantsJSONP(); // Recargar lista
+                } else {
+                    showError('Error', result.error || 'No se pudo completar el registro');
+                }
+                
+            } catch (error) {
+                console.error('Error en registro:', error);
+                showError('Error de conexión', 'No se pudo conectar con el servidor. Intenta de nuevo.');
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                text.textContent = 'Confirmar Registro';
+            }
         }
-        
-    } catch (error) {
-        console.error('Error en registro:', error);
-        showError('Error de conexión', 'No se pudo conectar con el servidor. Intenta de nuevo.');
-    } finally {
-        btn.disabled = false;
-        spinner.style.display = 'none';
-        text.textContent = 'Confirmar Registro';
-    }
-}
 
         // ==========================================
         // SALIR
@@ -1717,57 +1723,68 @@ async function confirmEnter() {
             }
         }
 
-// ==========================================
-// RENDERIZAR RANKING - CORREGIDO
-// ==========================================
-
-function renderRanking() {
-    const list = document.getElementById('rankingList');
-    
-    if (!userState.allParticipants || userState.allParticipants.length === 0) {
-        list.innerHTML = `
-            <div class="ranking-item" style="flex-direction: column; align-items: center; color: #888; padding: 2rem;">
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
-                <div>No hay participantes aún</div>
-            </div>
-        `;
-        return;
-    }
-    
-    const start = (userState.currentPage - 1) * userState.itemsPerPage;
-    const end = start + userState.itemsPerPage;
-    const pageData = userState.allParticipants.slice(start, end);
-    
-    list.innerHTML = pageData.map((user, index) => {
-        const actualRank = start + index + 1;
-        const rankClass = actualRank === 1 ? 'rank-1' : 
-                         actualRank === 2 ? 'rank-2' : 
-                         actualRank === 3 ? 'rank-3' : 'rank-other';
+        // ==========================================
+        // RENDERIZAR RANKING - CORREGIDO
+        // ==========================================
         
-        // MEJORADO: Manejo de avatar con imagen o inicial
-        let avatarContent;
-        if (user.profileImage && user.profileImage.trim() !== '') {
-            avatarContent = `<img src="${user.profileImage}" alt="${user.username}" onerror="this.onerror=null; this.parentElement.innerHTML='${user.username.charAt(0).toUpperCase()}'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">`;
-        } else {
-            avatarContent = user.username.charAt(0).toUpperCase();
-        }
-        
-        return `
-            <div class="ranking-item">
-                <div class="rank-number ${rankClass}">${actualRank}</div>
-                <div class="rank-avatar">${avatarContent}</div>
-                <div class="rank-info">
-                    <div class="rank-name">
-                        <a href="${user.profileLink}" target="_blank" rel="noopener">${user.username}</a>
+        function renderRanking() {
+            const list = document.getElementById('rankingList');
+            
+            if (!userState.allParticipants || userState.allParticipants.length === 0) {
+                list.innerHTML = `
+                    <div class="ranking-item" style="flex-direction: column; align-items: center; color: #888; padding: 2rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                        <div>No hay participantes aún</div>
                     </div>
-                </div>
-                <div class="rank-score">${formatNumber(user.score)} pts</div>
-            </div>
-        `;
-    }).join('');
-    
-    document.getElementById('pageIndicator').textContent = `Página ${userState.currentPage}`;
-}
+                `;
+                return;
+            }
+            
+            const start = (userState.currentPage - 1) * userState.itemsPerPage;
+            const end = start + userState.itemsPerPage;
+            const pageData = userState.allParticipants.slice(start, end);
+            
+            list.innerHTML = pageData.map((user, index) => {
+                const actualRank = start + index + 1;
+                const rankClass = actualRank === 1 ? 'rank-1' : 
+                                 actualRank === 2 ? 'rank-2' : 
+                                 actualRank === 3 ? 'rank-3' : 'rank-other';
+                
+                // MEJORADO: Manejo de avatar con imagen o inicial
+                let avatarContent;
+                if (user.profileImage && user.profileImage.trim() !== '') {
+                    avatarContent = `<img src="${user.profileImage}" alt="${user.username}" onerror="this.onerror=null; this.parentElement.innerHTML='${user.username.charAt(0).toUpperCase()}'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">`;
+                } else {
+                    avatarContent = user.username.charAt(0).toUpperCase();
+                }
+                
+                return `
+                    <div class="ranking-item">
+                        <div class="rank-number ${rankClass}">${actualRank}</div>
+                        <div class="rank-avatar">${avatarContent}</div>
+                        <div class="rank-info">
+                            <div class="rank-name">
+                                <a href="${user.profileLink}" target="_blank" rel="noopener">${user.username}</a>
+                            </div>
+                        </div>
+                        <div class="rank-score">${formatNumber(user.score)} pts</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('pageIndicator').textContent = `Página ${userState.currentPage}`;
+        }
+
+        function changePage(dir) {
+            const maxPage = Math.ceil(userState.allParticipants.length / userState.itemsPerPage);
+            const newPage = userState.currentPage + dir;
+            
+            if (newPage >= 1 && newPage <= maxPage) {
+                userState.currentPage = newPage;
+                renderRanking();
+            }
+        }
+
         // ==========================================
         // STORAGE
         // ==========================================
