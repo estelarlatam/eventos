@@ -1324,6 +1324,12 @@
         // ==========================================
         
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Evento Sticker - Inicializando');
+            console.log('🔧 URL Apps Script:', CONFIG.APPS_SCRIPT_URL);
+            console.log('🔧 Longitud URL:', CONFIG.APPS_SCRIPT_URL.length);
+            console.log('🔧 Termina en /exec?:', CONFIG.APPS_SCRIPT_URL.endsWith('/exec'));
+            console.log('🔧 ImgBB API Key:', CONFIG.IMGBB_API_KEY ? 'PRESENTE' : 'FALTANTE');
+            
             initializeDates();
             startCountdown();
             loadUserFromStorage();
@@ -1342,7 +1348,7 @@
             const el = document.getElementById('debugInfo');
             el.textContent = msg;
             el.style.display = 'block';
-            console.error(msg);
+            console.error('🐛 DEBUG:', msg);
         }
 
         // ==========================================
@@ -1457,6 +1463,12 @@
             const file = e.target.files[0];
             if (!file) return;
             
+            console.log('📸 Archivo seleccionado:', {
+                name: file.name,
+                size: Math.round(file.size / 1024) + 'KB',
+                type: file.type
+            });
+            
             if (file.size > 2 * 1024 * 1024) {
                 showError('Archivo muy grande', 'Máximo 2MB permitido');
                 return;
@@ -1530,35 +1542,116 @@
         }
 
         // ==========================================
-        // JSONP - CARGAR PARTICIPANTES (MÉTODO CONFIABLE)
+        // JSONP - CARGAR PARTICIPANTES (VERSIÓN CORREGIDA)
         // ==========================================
         
         function fetchParticipantsJSONP() {
+            console.log('📡 Solicitando participantes a:', CONFIG.APPS_SCRIPT_URL);
+            
             const script = document.createElement('script');
             const callbackName = 'jsonpCallback_' + Date.now();
+            let timeoutId;
+            
+            // Configurar timeout
+            timeoutId = setTimeout(() => {
+                console.error('❌ Timeout en JSONP después de 10 segundos');
+                showDebug('Error: Timeout al cargar participantes');
+                
+                // Limpiar
+                if (script.parentNode) {
+                    document.head.removeChild(script);
+                }
+                delete window[callbackName];
+                
+                // Mostrar mensaje amigable
+                document.getElementById('rankingList').innerHTML = 
+                    '<div class="ranking-item" style="justify-content: center; color: #e74c3c; padding: 2rem;">' +
+                    '   <div style="margin-bottom: 0.5rem;">⚠️</div>' +
+                    '   <div>Error de conexión</div>' +
+                    '   <div style="font-size: 0.8rem; margin-top: 0.5rem;">Recargando en 5 segundos...</div>' +
+                    '</div>';
+                    
+                // Auto-reload
+                setTimeout(() => {
+                    console.log('🔄 Auto-reloading...');
+                    fetchParticipantsJSONP();
+                }, 5000);
+            }, 10000);
             
             window[callbackName] = function(data) {
-                console.log('📥 Datos recibidos del servidor:', data);
+                clearTimeout(timeoutId);
+                console.log('📥 Respuesta JSONP recibida:', {
+                    success: data.success,
+                    count: data.count,
+                    hasParticipants: !!(data.participants && data.participants.length),
+                    sampleParticipant: data.participants && data.participants[0] ? 
+                        {name: data.participants[0].username, hasImage: !!data.participants[0].profileImage} : 
+                        'none'
+                });
                 
                 if (data.success) {
+                    // ✅ GUARDAR CORRECTAMENTE LOS PARTICIPANTES
                     userState.allParticipants = data.participants || [];
-                    document.getElementById('participantCount').textContent = 
-                        `${data.count || 0} participantes`;
                     
-                    // Actualizar usuario si participa
+                    console.log('📊 Participantes cargados:', userState.allParticipants.length);
+                    
+                    if (userState.allParticipants.length > 0) {
+                        console.log('👤 Primer participante:', {
+                            name: userState.allParticipants[0].username,
+                            email: userState.allParticipants[0].email,
+                            hasImage: !!userState.allParticipants[0].profileImage,
+                            imagePreview: userState.allParticipants[0].profileImage ? 
+                                userState.allParticipants[0].profileImage.substring(0, 30) + '...' : 'NO IMAGE'
+                        });
+                    }
+                    
+                    // Actualizar contador
+                    document.getElementById('participantCount').textContent = 
+                        `${data.count || userState.allParticipants.length} participantes`;
+                    
+                    // Actualizar usuario si está participando
                     if (userState.isParticipating && userState.userEmail) {
                         const user = userState.allParticipants.find(p => p.email === userState.userEmail);
                         if (user) {
-                            userState.userData = user;
+                            console.log('👤 Usuario encontrado en ranking:', user.username);
+                            userState.userData = {
+                                ...userState.userData,
+                                ...user,
+                                score: user.score || 0
+                            };
                             updateUserCard();
+                        } else {
+                            console.warn('⚠️ Usuario no encontrado en la lista de participantes');
                         }
                     }
                     
+                    // Renderizar ranking
                     renderRanking();
+                    
                 } else {
+                    console.error('❌ Error del servidor:', data.error);
                     showDebug('Error del servidor: ' + (data.error || 'Desconocido'));
-                    document.getElementById('rankingList').innerHTML = 
-                        '<div class="ranking-item" style="justify-content: center; color: #888; padding: 2rem;">Error cargando datos</div>';
+                    
+                    // Mostrar datos de prueba si hay error
+                    userState.allParticipants = [
+                        {
+                            username: "Ejemplo de Usuario",
+                            email: "ejemplo@test.com",
+                            profileLink: "https://estelar.app/ejemplo",
+                            profileImage: "https://i.ibb.co/s9wjSHC4/ee405906ba14.png",
+                            score: 1500
+                        },
+                        {
+                            username: "Segundo Ejemplo",
+                            email: "ejemplo2@test.com",
+                            profileLink: "https://estelar.app/ejemplo2",
+                            profileImage: "",
+                            score: 1200
+                        }
+                    ];
+                    
+                    document.getElementById('participantCount').textContent = `${userState.allParticipants.length} participantes (datos de prueba)`;
+                    renderRanking();
                 }
                 
                 // Limpiar
@@ -1568,14 +1661,16 @@
                 }
             };
             
-            script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getParticipants&evento=${encodeURIComponent(CONFIG.EVENT_NAME)}&callback=${callbackName}`;
+            script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getParticipants&evento=${encodeURIComponent(CONFIG.EVENT_NAME)}&callback=${callbackName}&_=${Date.now()}`;
             script.onerror = function() {
-                showDebug('Error: No se pudo cargar el script. Verifica la URL.');
-                document.getElementById('rankingList').innerHTML = 
-                    '<div class="ranking-item" style="justify-content: center; color: #e74c3c; padding: 2rem;">Error de conexión</div>';
+                clearTimeout(timeoutId);
+                console.error('❌ Error cargando script JSONP');
+                showDebug('Error: No se pudo cargar el script. Verifica la URL: ' + CONFIG.APPS_SCRIPT_URL);
+                
                 delete window[callbackName];
             };
             
+            console.log('📡 URL JSONP:', script.src);
             document.head.appendChild(script);
         }
 
