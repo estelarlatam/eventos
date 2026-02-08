@@ -1208,7 +1208,7 @@
                     <img class="image-upload-preview" id="uploadPreview" alt="Preview">
                     <div class="image-upload-text">
                         <span class="icon">📷</span>
-                        Foto de Perfil (Opcional)<br>
+                                                    Foto de Perfil <span class="required">*</span><br>
                         <small style="color: #999;">Toca para subir una foto</small>
                     </div>
                     <div class="image-upload-change">Cambiar imagen</div>
@@ -1700,7 +1700,16 @@
             btn.disabled = true;
             spinner.style.display = 'inline-block';
             text.textContent = 'Verificando...';
-            
+
+
+                // VALIDACIÓN: Imagen obligatoria
+                if (!userState.tempImage) {
+                            showError('Imagen requerida', 'Por favor, sube una imagen de perfil para continuar con el registro.');
+                            btn.disabled = false;
+                            spinner.style.display = 'none';
+                            text.textContent = 'Confirmar Registro';
+                            return;
+                        }
             try {
                 let imageUrl = '';
                 let imageError = '';
