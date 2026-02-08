@@ -1468,7 +1468,7 @@
                 document.getElementById('uploadPreview').classList.add('active');
                 document.getElementById('uploadContainer').classList.add('has-image');
                 userState.tempImage = evt.target.result;
-                console.log('Imagen cargada en base64, tamaño:', evt.target.result.length);
+                console.log('📸 Imagen cargada en base64, tamaño:', Math.round(evt.target.result.length * 0.75) / 1024, 'KB');
             };
             reader.onerror = function() {
                 showError('Error', 'No se pudo leer la imagen');
@@ -1477,30 +1477,55 @@
         }
 
         // ==========================================
-        // NUEVA FUNCIÓN: SUBIR A IMGBB
+        // FUNCIÓN MEJORADA: SUBIR A IMGBB
         // ==========================================
         
         async function uploadToImgBB(base64Image) {
+            console.log('🔼 Iniciando subida a ImgBB...');
+            console.log('   - Base64 length:', base64Image.length);
+            console.log('   - Tamaño aproximado:', Math.round(base64Image.length * 0.75) / 1024, 'KB');
+            
             // Remover el prefijo data:image/... si existe
             const base64Data = base64Image.split(',')[1] || base64Image;
+            
+            console.log('   - Base64 limpio length:', base64Data.length);
             
             const formData = new FormData();
             formData.append('image', base64Data);
             
-            console.log('Subiendo imagen a ImgBB...');
+            console.log('   - FormData creado, enviando a ImgBB...');
+            console.log('   - API Key:', CONFIG.IMGBB_API_KEY ? 'PRESENTE' : 'FALTANTE');
             
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${CONFIG.IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                console.log('Imagen subida exitosamente:', data.data.url);
-                return data.data.url; // URL directa de la imagen
-            } else {
-                throw new Error(data.error?.message || 'Error al subir imagen a ImgBB');
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${CONFIG.IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('   - Respuesta HTTP recibida, status:', response.status);
+                
+                const data = await response.json();
+                console.log('   - Respuesta JSON completa:', data);
+                
+                if (data.success) {
+                    console.log('✅ Imagen subida exitosamente:', data.data.url);
+                    console.log('   - URL ImgBB:', data.data.url);
+                    console.log('   - Tiempo de expiración:', data.data.expiration || 'Nunca');
+                    console.log('   - ID de imagen:', data.data.id);
+                    return data.data.url;
+                } else {
+                    console.error('❌ Error de ImgBB:', data.error);
+                    console.error('   - Código:', data.error?.code);
+                    console.error('   - Mensaje:', data.error?.message);
+                    console.error('   - Estado:', data.status);
+                    throw new Error(`ImgBB: ${data.error?.message || 'Error desconocido'} (Código: ${data.error?.code || 'N/A'})`);
+                }
+                
+            } catch (fetchError) {
+                console.error('❌ Error de red/fetch:', fetchError);
+                console.error('   - Tipo:', fetchError.name);
+                console.error('   - Mensaje:', fetchError.message);
+                throw new Error(`Error de conexión a ImgBB: ${fetchError.message}`);
             }
         }
 
@@ -1513,7 +1538,7 @@
             const callbackName = 'jsonpCallback_' + Date.now();
             
             window[callbackName] = function(data) {
-                console.log('Datos recibidos:', data);
+                console.log('📥 Datos recibidos del servidor:', data);
                 
                 if (data.success) {
                     userState.allParticipants = data.participants || [];
@@ -1555,7 +1580,7 @@
         }
 
         // ==========================================
-        // REGISTRO (POST) - CON IMGBB
+        // FUNCIÓN MEJORADA: CONFIRMAR REGISTRO
         // ==========================================
         
         async function confirmEnter() {
@@ -1579,35 +1604,54 @@
             
             btn.disabled = true;
             spinner.style.display = 'inline-block';
-            text.textContent = 'Subiendo imagen...';
+            text.textContent = 'Verificando...';
             
             try {
                 let imageUrl = '';
+                let imageError = '';
                 
-                // Si hay imagen, subirla a ImgBB primero
+                // 1. SUBIR IMAGEN A IMGBB (SI HAY)
                 if (userState.tempImage) {
                     try {
+                        text.textContent = 'Subiendo imagen...';
                         imageUrl = await uploadToImgBB(userState.tempImage);
+                        console.log('✅ Imagen subida exitosamente a ImgBB:', imageUrl);
                         text.textContent = 'Registrando...';
                     } catch (imgError) {
-                        console.warn('Error subiendo imagen, continuando sin foto:', imgError);
-                        // Continuar sin imagen si falla la subida
+                        console.error('❌ Error subiendo a ImgBB:', imgError);
+                        imageError = imgError.message;
+                        
+                        // PREGUNTAR AL USUARIO SI QUIERE CONTINUAR SIN IMAGEN
+                        const continueWithoutImage = confirm(
+                            '⚠️ No se pudo subir la imagen a ImgBB.\n\n' +
+                            'Error: ' + imgError.message + '\n\n' +
+                            '¿Quieres continuar el registro SIN imagen de perfil?\n\n' +
+                            '(Haz clic en Aceptar para continuar sin imagen, o Cancelar para detener el registro)'
+                        );
+                        
+                        if (!continueWithoutImage) {
+                            throw new Error('Usuario canceló por error en imagen');
+                        }
+                        
+                        // Continuar sin imagen
+                        imageUrl = '';
+                        text.textContent = 'Registrando...';
                     }
                 }
                 
-                // Preparar datos para Google Sheets (solo URL, no base64)
+                // 2. ENVIAR DATOS A GOOGLE SHEETS
                 const requestData = {
                     action: 'join',
                     username: username,
                     email: email,
                     profileLink: profileLink,
                     evento: CONFIG.EVENT_NAME,
-                    profileImage: imageUrl // URL de ImgBB o vacío
+                    profileImage: imageUrl
                 };
                 
-                console.log('Enviando datos a Google Sheets:', {
+                console.log('📤 Enviando a Google Sheets:', {
                     ...requestData,
-                    profileImage: imageUrl ? 'URL_IMGBB_PRESENTE' : 'SIN_IMAGEN'
+                    profileImage: imageUrl ? `URL_IMGBB (${imageUrl.length} chars)` : 'SIN_IMAGEN'
                 });
                 
                 const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
@@ -1619,7 +1663,7 @@
                 });
                 
                 const result = await response.json();
-                console.log('Respuesta del servidor:', result);
+                console.log('📥 Respuesta del servidor:', result);
                 
                 if (result.success) {
                     userState.isParticipating = true;
@@ -1636,20 +1680,53 @@
                     updateUIForParticipant();
                     closeModal('enterModal');
                     
-                    // Mensaje diferente si se registró con o sin foto
-                    const successMsg = imageUrl 
-                        ? '¡Registro exitoso con foto de perfil!' 
-                        : '¡Registro exitoso! (Sin foto de perfil)';
+                    // Mensaje apropiado según si hay imagen o no
+                    if (imageUrl) {
+                        showSuccess('¡Registro exitoso!', 
+                            '✅ Tu registro se completó correctamente.\n' +
+                            '📸 Tu imagen de perfil se subió exitosamente a ImgBB.');
+                    } else if (userState.tempImage && imageError) {
+                        showSuccess('¡Registro exitoso!', 
+                            '✅ Tu registro se completó correctamente.\n' +
+                            '⚠️ Pero NO se subió la imagen de perfil (error en ImgBB).\n' +
+                            '🔧 Puedes actualizar tu imagen más tarde.');
+                    } else {
+                        showSuccess('¡Registro exitoso!', 
+                            '✅ Te registraste correctamente en el evento.\n' +
+                            '👤 Aparecerás en el ranking sin imagen de perfil.');
+                    }
                     
-                    showSuccess('¡Bienvenido!', successMsg);
-                    fetchParticipantsJSONP(); // Recargar lista
+                    fetchParticipantsJSONP();
+                    
                 } else {
-                    showError('Error', result.error || 'No se pudo completar el registro');
+                    // Manejar errores específicos
+                    if (result.error && result.error.includes('Ya estás registrado')) {
+                        showError('Ya registrado', 
+                            '⚠️ Este email ya está registrado en el evento.\n' +
+                            '📧 Email: ' + email + '\n' +
+                            '🔧 Si es tu email, ya puedes ver tu posición en el ranking.');
+                    } else {
+                        showError('Error en registro', 
+                            '❌ No se pudo completar el registro.\n\n' +
+                            'Error: ' + (result.error || 'Desconocido') + '\n\n' +
+                            '🔧 Por favor, intenta de nuevo o contacta al administrador.');
+                    }
                 }
                 
             } catch (error) {
-                console.error('Error en registro:', error);
-                showError('Error de conexión', 'No se pudo conectar con el servidor. Intenta de nuevo.');
+                console.error('❌ Error general en registro:', error);
+                
+                if (error.message === 'Usuario canceló por error en imagen') {
+                    // El usuario canceló explícitamente
+                    showError('Registro cancelado', 
+                        '⏸️ No se completó el registro debido al error en la imagen.\n\n' +
+                        '📸 Puedes intentar con otra imagen o continuar sin ella.');
+                } else {
+                    showError('Error de conexión', 
+                        '❌ No se pudo conectar con el servidor.\n\n' +
+                        '🔧 Por favor, verifica tu conexión a internet e intenta de nuevo.\n\n' +
+                        'Detalle técnico: ' + error.message);
+                }
             } finally {
                 btn.disabled = false;
                 spinner.style.display = 'none';
@@ -1658,7 +1735,7 @@
         }
 
         // ==========================================
-        // SALIR
+        // SALIR DEL EVENTO
         // ==========================================
         
         async function confirmLeave() {
@@ -1689,14 +1766,22 @@
                     removeUserFromStorage();
                     updateUIForNonParticipant();
                     closeModal('leaveModal');
-                    showSuccess('Evento Abandonado', 'Has salido del evento');
+                    showSuccess('Evento Abandonado', 
+                        '✅ Has salido exitosamente del evento.\n' +
+                        '📊 Tu puntuación ha sido resetada.\n' +
+                        '🔁 Puedes unirte de nuevo cuando quieras.');
                     fetchParticipantsJSONP();
                 } else {
-                    showError('Error', result.error || 'No se pudo procesar');
+                    showError('Error', 
+                        '❌ No se pudo procesar tu salida.\n\n' +
+                        'Error: ' + (result.error || 'Desconocido') + '\n\n' +
+                        '🔧 Por favor, intenta de nuevo o contacta al administrador.');
                 }
                 
             } catch (error) {
-                showError('Error de conexión', 'No se pudo conectar');
+                showError('Error de conexión', 
+                    '❌ No se pudo conectar con el servidor.\n\n' +
+                    '🔧 Por favor, verifica tu conexión a internet e intenta de nuevo.');
             } finally {
                 btn.disabled = false;
                 spinner.style.display = 'none';
@@ -1756,7 +1841,7 @@
             const img = document.getElementById('userAvatarImg');
             const initial = document.getElementById('userInitial');
             
-            if (user.profileImage) {
+            if (user.profileImage && user.profileImage.trim() !== '') {
                 img.src = user.profileImage;
                 img.style.display = 'block';
                 initial.style.display = 'none';
@@ -1797,7 +1882,13 @@
                 // Manejo de avatar con imagen de ImgBB o inicial
                 let avatarContent;
                 if (user.profileImage && user.profileImage.trim() !== '') {
-                    avatarContent = `<img src="${user.profileImage}" alt="${user.username}" onerror="this.onerror=null; this.parentElement.innerHTML='${user.username.charAt(0).toUpperCase()}'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">`;
+                    avatarContent = `<img src="${user.profileImage}" alt="${user.username}" 
+                        onerror="this.onerror=null; 
+                        this.parentElement.innerHTML='${user.username.charAt(0).toUpperCase()}'; 
+                        this.parentElement.style.display='flex'; 
+                        this.parentElement.style.alignItems='center'; 
+                        this.parentElement.style.justifyContent='center';
+                        console.error('❌ Error cargando imagen de ${user.username}')">`;
                 } else {
                     avatarContent = user.username.charAt(0).toUpperCase();
                 }
@@ -1836,8 +1927,11 @@
         function saveUserToStorage() {
             localStorage.setItem('stickerEvent_user', JSON.stringify({
                 email: userState.userEmail,
-                isParticipating: userState.isParticipating
+                isParticipating: userState.isParticipating,
+                username: userState.userData?.username || '',
+                profileImage: userState.userData?.profileImage || ''
             }));
+            console.log('💾 Datos guardados en localStorage');
         }
 
         function loadUserFromStorage() {
@@ -1847,15 +1941,27 @@
                     const data = JSON.parse(saved);
                     userState.userEmail = data.email;
                     userState.isParticipating = data.isParticipating;
-                    if (userState.isParticipating) updateUIForParticipant();
+                    
+                    if (userState.isParticipating) {
+                        userState.userData = {
+                            username: data.username || '',
+                            email: data.email,
+                            profileImage: data.profileImage || '',
+                            score: 0
+                        };
+                        updateUIForParticipant();
+                        console.log('📂 Usuario cargado desde localStorage:', data.email);
+                    }
                 } catch (e) {
-                    console.error(e);
+                    console.error('❌ Error cargando de localStorage:', e);
+                    localStorage.removeItem('stickerEvent_user');
                 }
             }
         }
 
         function removeUserFromStorage() {
             localStorage.removeItem('stickerEvent_user');
+            console.log('🗑️ Datos eliminados de localStorage');
         }
 
         // Cerrar modales al hacer click fuera
@@ -1863,6 +1969,20 @@
             overlay.addEventListener('click', function(e) {
                 if (e.target === this) this.classList.remove('active');
             });
+        });
+
+        // Limpiar formulario al cerrar modal
+        document.getElementById('enterModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                // Resetear formulario
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regProfileLink').value = '';
+                document.getElementById('uploadPreview').src = '';
+                document.getElementById('uploadPreview').classList.remove('active');
+                document.getElementById('uploadContainer').classList.remove('has-image');
+                userState.tempImage = null;
+            }
         });
     </script>
 </body>
