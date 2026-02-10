@@ -58,6 +58,34 @@
             display: block;
         }
 
+        /* Overlay cuando el evento ha finalizado */
+        .event-ended-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .event-ended-overlay.active {
+            display: flex;
+        }
+
+        .event-ended-text {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+        }
+
         .tabs-container {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
@@ -170,30 +198,27 @@
             padding: 1.5rem;
         }
 
+        /* VUELTO AL ESTADO ORIGINAL - Sin escalado */
         .gift-image-container {
             width: 100%;
             border-radius: 12px;
             overflow: hidden;
             margin: 1rem 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            /* Quitar bordes blancos - ajustar al contenido */
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background: transparent;
+            position: relative;
         }
 
+        /* VUELTO AL ESTADO ORIGINAL - Sin transformaciones */
         .gift-image-container img {
             width: 100%;
             height: auto;
             display: block;
-            /* Asegurar que la imagen ocupe todo el espacio sin bordes */
-            object-fit: cover;
         }
 
         .gift-examples-real {
             width: 100%;
-            max-width: 500px; /* Aumentado de 300px a 500px */
+            max-width: 500px;
             margin: 1rem auto;
             border-radius: 12px;
             overflow: hidden;
@@ -358,7 +383,7 @@
             background: #e9ecef;
         }
 
-        /* Cambiar el icono ::before por el de estrellas */
+        /* Icono de estrellas en acordeón */
         .accordion-trigger::before {
             content: '';
             width: 16px;
@@ -727,10 +752,17 @@
         .btn-enter:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            background: #ccc !important;
         }
 
         .btn-enter.entered {
             background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        }
+
+        /* Estilo especial para cuando el evento ha finalizado */
+        .btn-enter.event-ended-btn {
+            background: #666 !important;
+            cursor: not-allowed;
         }
 
         .btn-leave {
@@ -814,7 +846,7 @@
         /* Botones de paginación - Rectángulos con esquinas totalmente redondeadas */
         .btn-modal {
             padding: 0.75rem 2rem;
-            border-radius: 50px; /* Esquinas totalmente redondeadas */
+            border-radius: 50px;
             border: 2px solid #e0e0e0;
             font-weight: 600;
             cursor: pointer;
@@ -839,7 +871,7 @@
             color: #666;
             border: none;
             padding: 0.75rem 2rem;
-            border-radius: 50px; /* Esquinas totalmente redondeadas */
+            border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -856,7 +888,7 @@
             color: white;
             border: none;
             padding: 0.75rem 2rem;
-            border-radius: 50px; /* Esquinas totalmente redondeadas */
+            border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -871,7 +903,7 @@
             background: #2196f3;
             color: white;
             padding: 0.875rem 2rem;
-            border-radius: 50px; /* Esquinas totalmente redondeadas */
+            border-radius: 50px;
             border: none;
             font-weight: 600;
             cursor: pointer;
@@ -964,7 +996,7 @@
             border: 2px solid #e0e0e0;
             color: #666;
             padding: 0.75rem 1.5rem;
-            border-radius: 50px; /* Esquinas totalmente redondeadas */
+            border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -1004,10 +1036,14 @@
                 min-width: 50px;
             }
 
-            /* Ajustes para móvil en paginación */
             .pagination-btn {
                 padding: 0.5rem 1rem;
                 font-size: 0.85rem;
+            }
+
+            .event-ended-text {
+                font-size: 1.5rem;
+                padding: 0.75rem 1rem;
             }
         }
     </style>
@@ -1024,10 +1060,15 @@
     </div>
 
     <!-- Hero Banner -->
-    <div class="hero-banner">
+    <div class="hero-banner" id="heroBanner">
         <img src="https://raw.githubusercontent.com/estelarlatam/eventos/refs/heads/main/Informacion/Create-a-Sticker-Gift/contenido-del-evento/%E2%96%A0Banner-del-Evento.png" 
              alt="Create a Sticker Gift Event Banner" 
              onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #ffb6c1 0%, #ffc0cb 100%)'; this.parentElement.innerHTML='<div style=\'padding: 2rem; text-align: center;\'><h1 style=\'color: white; font-size: 2rem;\'>Create a Sticker Gift!</h1></div>';">
+        
+        <!-- Overlay cuando el evento ha finalizado -->
+        <div class="event-ended-overlay" id="eventEndedOverlay">
+            <div class="event-ended-text">El evento ha finalizado</div>
+        </div>
     </div>
 
     <!-- Tabs -->
@@ -1054,7 +1095,7 @@
                 </p>
             </div>
 
-            <!-- Original Gift Image -->
+            <!-- Original Gift Image - VUELTO AL ESTADO ORIGINAL -->
             <div class="card">
                 <div class="card-subtitle">IMAGEN DEL REGALO ORIGINAL</div>
                 <div class="gift-image-container">
@@ -1450,10 +1491,31 @@
                 const diff = end - now;
                 
                 if (diff <= 0) {
+                    // Evento ha finalizado
                     isEventEnded = true;
                     document.getElementById('countdown').innerHTML = '<span class="event-ended">Evento Finalizado</span>';
-                    document.getElementById('enterBtn').disabled = true;
-                    document.getElementById('enterBtn').textContent = 'Evento Finalizado';
+                    
+                    // Mostrar overlay en el banner
+                    document.getElementById('eventEndedOverlay').classList.add('active');
+                    
+                    // Deshabilitar botón de participar completamente
+                    const enterBtn = document.getElementById('enterBtn');
+                    enterBtn.textContent = 'Evento Finalizado';
+                    enterBtn.disabled = true;
+                    enterBtn.classList.add('event-ended-btn');
+                    enterBtn.onclick = null; // Eliminar el evento onclick
+                    
+                    // Ocultar mensaje de "Aún no participas" si no está participando
+                    if (!isUserParticipating) {
+                        const notParticipatingMsg = document.getElementById('notParticipatingMsg');
+                        if (notParticipatingMsg) {
+                            notParticipatingMsg.innerHTML = `
+                                <p style="color: #666; margin-bottom: 1rem;">El evento ha finalizado</p>
+                                <p style="font-size: 0.9rem; color: #888;">Las inscripciones están cerradas</p>
+                            `;
+                        }
+                    }
+                    
                     return;
                 }
                 
@@ -1539,14 +1601,17 @@
         // ==========================================
         
         function showEnterModal() {
+            // Verificar si el evento ha finalizado
             if (isEventEnded) {
-                showError('El evento ha finalizado');
+                showError('El evento ha finalizado. Ya no se aceptan inscripciones.');
                 return;
             }
+            
             if (isUserParticipating) {
                 showError('Ya estás participando en este evento');
                 return;
             }
+            
             document.getElementById('enterModal').classList.add('active');
         }
 
@@ -1632,7 +1697,7 @@
         }
 
         // ==========================================
-        // RENDERIZAR RANKINGS - VERSIÓN CORREGIDA
+        // RENDERIZAR RANKINGS
         // ==========================================
 
         function renderRankings() {
@@ -1722,7 +1787,6 @@
             document.getElementById('pageIndicator').textContent = `Página ${currentPage} de ${totalPages}`;
             document.getElementById('participantCount').textContent = `${combinedParticipants.length} participantes`;
             
-            // Actualizar estado de botones de paginación
             prevBtn.disabled = currentPage <= 1;
             nextBtn.disabled = currentPage >= totalPages;
             
@@ -1762,6 +1826,16 @@
 
         function updateUIForParticipant() {
             const btn = document.getElementById('enterBtn');
+            
+            // Si el evento ha finalizado, no mostrar el botón de "Ya estás participando"
+            if (isEventEnded) {
+                btn.textContent = 'Evento Finalizado';
+                btn.disabled = true;
+                btn.classList.add('event-ended-btn');
+                btn.onclick = null;
+                return;
+            }
+            
             btn.textContent = 'Ya estás participando ✓';
             btn.classList.add('entered');
             btn.disabled = true;
@@ -1847,6 +1921,12 @@
         // ==========================================
         
         async function confirmEnter() {
+            // Verificar nuevamente si el evento ha finalizado
+            if (isEventEnded) {
+                showError('El evento ha finalizado. Ya no se aceptan inscripciones.');
+                return;
+            }
+            
             const username = document.getElementById('regUsername').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const profileLink = document.getElementById('regProfileLink').value.trim();
@@ -1977,9 +2057,18 @@
                     isUserParticipating = false;
                     
                     const enterBtn = document.getElementById('enterBtn');
-                    enterBtn.textContent = 'Participar en el Evento';
-                    enterBtn.classList.remove('entered');
-                    enterBtn.disabled = false;
+                    
+                    // Si el evento ha finalizado, mantener el mensaje de finalizado
+                    if (isEventEnded) {
+                        enterBtn.textContent = 'Evento Finalizado';
+                        enterBtn.classList.add('event-ended-btn');
+                        enterBtn.disabled = true;
+                        enterBtn.onclick = null;
+                    } else {
+                        enterBtn.textContent = 'Participar en el Evento';
+                        enterBtn.classList.remove('entered');
+                        enterBtn.disabled = false;
+                    }
                     
                     const leaveBtn = document.getElementById('leaveBtn');
                     if (leaveBtn) leaveBtn.remove();
@@ -2027,6 +2116,7 @@
             console.log('🔍 DEBUG - Estado actual:', {
                 currentUser: currentUser,
                 isUserParticipating: isUserParticipating,
+                isEventEnded: isEventEnded,
                 localStorage: localStorage.getItem('eventUser_' + CONFIG.EVENT_NAME),
                 allParticipantsCount: allParticipants.length,
                 userPhoto: currentUser ? (currentUser.profileImage || 'No tiene foto') : 'No hay usuario'
