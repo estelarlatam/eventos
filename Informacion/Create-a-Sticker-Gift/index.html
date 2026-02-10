@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>Crear un Regalo de Sticker - Evento Especial</title>
     <style>
-        /* [CSS se mantiene igual que tu versión actual] */
         * {
             margin: 0;
             padding: 0;
@@ -1298,7 +1298,7 @@
         // ==========================================
         
         const CONFIG = {
-            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwjyFMctwPETIefCt3YoItKTgP9VaSPMGcopRBxy0yUcb7k4xpPlfZjldWZCi075loJtQ/exec',
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbznuflioYVDWArYcyLJqPy71NdhHNaERf30dui092818xTjIX3gF6p8z9hiHDp6a.../exec',
             EVENT_NAME: 'Create-a-Sticker-Gift',
             IMGBB_API_KEY: 'd707728d8abb29813e79f898ec131fc5'
         };
@@ -1333,7 +1333,6 @@
             checkExistingParticipation();
             loadParticipants();
             
-            // Depuración: Forzar actualización después de cargar
             setTimeout(function() {
                 console.log('🔍 Depuración - Estado actual:', {
                     currentUser: currentUser,
@@ -1512,10 +1511,8 @@
                     allParticipants = data.participants;
                     console.log('✅ Participantes cargados:', allParticipants.length);
                     
-                    // Actualizar UI inmediatamente
                     renderRankings();
                     
-                    // Si el usuario está participando, actualizar su tarjeta
                     if (currentUser && isUserParticipating) {
                         updateUserCard();
                     }
@@ -1543,16 +1540,34 @@
         }
 
         // ==========================================
-        // RENDERIZAR RANKINGS - CORREGIDO COMPLETAMENTE
+        // MANEJO DE ERRORES EN AVATARES
+        // ==========================================
+        
+        function handleAvatarError(imgElement, initial) {
+            console.log('🔄 Reemplazando avatar por inicial:', initial);
+            
+            const avatarDiv = imgElement.parentElement;
+            avatarDiv.innerHTML = initial;
+            avatarDiv.style.display = 'flex';
+            avatarDiv.style.alignItems = 'center';
+            avatarDiv.style.justifyContent = 'center';
+            avatarDiv.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            avatarDiv.style.color = 'white';
+            avatarDiv.style.fontWeight = '600';
+            avatarDiv.style.fontSize = '1.2rem';
+            
+            console.log('❌ Imagen que falló:', imgElement.src);
+        }
+
+        // ==========================================
+        // RENDERIZAR RANKINGS - VERSIÓN CORREGIDA
         // ==========================================
 
         function renderRankings() {
             const list = document.getElementById('rankingList');
             
-            // ✅ CREAR LISTA COMBINADA: participantes del backend + usuario actual
             let combinedParticipants = [...allParticipants];
             
-            // Si el usuario actual no está en la lista, agregarlo
             if (currentUser && isUserParticipating) {
                 const userExists = combinedParticipants.some(p => 
                     p.email === currentUser.email || 
@@ -1578,7 +1593,6 @@
                 return;
             }
             
-            // Ordenar por puntuación (mayor a menor)
             combinedParticipants.sort((a, b) => (b.score || 0) - (a.score || 0));
             
             const start = (currentPage - 1) * itemsPerPage;
@@ -1597,21 +1611,19 @@
                 else if (rank === 2) rankClass = 'rank-2';
                 else if (rank === 3) rankClass = 'rank-3';
                 
-                // ✅ Manejo de imagen mejorado
                 const imageUrl = user.profileImage || user.avatarUrl || user.profile_image || '';
                 const hasImage = imageUrl && imageUrl.trim() !== '' && !imageUrl.includes('undefined');
                 
                 console.log(`👤 ${user.username} - Rank ${rank}:`, {
                     hasImage: hasImage ? 'SÍ' : 'NO',
-                    imageUrl: imageUrl.substring(0, 50) + '...'
+                    imageUrl: imageUrl.substring(0, 50)
                 });
                 
-                // Manejo de avatar con imagen o inicial
                 let avatarContent;
                 if (hasImage) {
                     avatarContent = `<img src="${imageUrl}" alt="${user.username}" 
-                        onerror="this.onerror=null; this.parentElement.innerHTML='${user.username.charAt(0).toUpperCase()}'; 
-                        this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">`;
+                        class="avatar-img"
+                        onerror="handleAvatarError(this, '${user.username.charAt(0).toUpperCase()}')">`;
                 } else {
                     avatarContent = user.username.charAt(0).toUpperCase();
                 }
@@ -1636,8 +1648,7 @@
             
             console.log('📊 Rankings renderizados:', {
                 totalParticipants: combinedParticipants.length,
-                currentUserIncluded: currentUser ? 'SÍ' : 'NO',
-                userPhoto: currentUser ? (currentUser.profileImage || 'No tiene foto') : 'No hay usuario'
+                currentUserIncluded: currentUser ? 'SÍ' : 'NO'
             });
         }
 
@@ -1693,7 +1704,6 @@
         function updateUserCard() {
             if (!currentUser) return;
             
-            // Intentar encontrar posición real
             let position = '--';
             try {
                 const sorted = [...allParticipants].sort((a, b) => (b.score || 0) - (a.score || 0));
@@ -1717,7 +1727,6 @@
             const img = document.getElementById('userAvatarImg');
             const initial = document.getElementById('userInitial');
             
-            // ✅ Usar directamente la imagen del currentUser
             const imageUrl = currentUser.profileImage || currentUser.avatarUrl || currentUser.profile_image || '';
             
             console.log('🖼️ updateUserCard - URL de imagen:', imageUrl);
@@ -1727,7 +1736,6 @@
                 img.style.display = 'block';
                 initial.style.display = 'none';
                 
-                // Forzar carga y manejar errores
                 img.onload = function() {
                     console.log('✅ Foto cargada exitosamente en userAvatarImg:', imageUrl);
                 };
@@ -1736,6 +1744,15 @@
                     img.style.display = 'none';
                     initial.style.display = 'block';
                     initial.textContent = currentUser.username.charAt(0).toUpperCase();
+                    
+                    const avatarDiv = document.getElementById('userAvatar');
+                    avatarDiv.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    avatarDiv.style.color = 'white';
+                    avatarDiv.style.display = 'flex';
+                    avatarDiv.style.alignItems = 'center';
+                    avatarDiv.style.justifyContent = 'center';
+                    avatarDiv.style.fontWeight = '700';
+                    avatarDiv.style.fontSize = '1.5rem';
                 };
             } else {
                 console.log('⚠️ No hay imagen válida, usando inicial');
@@ -1743,12 +1760,6 @@
                 initial.style.display = 'block';
                 initial.textContent = currentUser.username.charAt(0).toUpperCase();
             }
-            
-            console.log('🔄 updateUserCard completado:', {
-                username: currentUser.username,
-                hasImage: !!(imageUrl && imageUrl.trim() !== ''),
-                imageUrl: imageUrl
-            });
         }
 
         // ==========================================
@@ -1782,11 +1793,9 @@
             text.textContent = 'Subiendo imagen...';
             
             try {
-                // 1. Subir a ImgBB
                 const imageUrl = await uploadToImgBB(uploadedImageBase64);
                 text.textContent = 'Registrando...';
                 
-                // 2. Registrar en Google Sheets
                 const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: {'Content-Type': 'text/plain;charset=utf-8'},
@@ -1817,11 +1826,9 @@
                     closeModal('enterModal');
                     showSuccess('¡Bienvenido!', 'Te has registrado exitosamente en el evento');
                     
-                    // Forzar recarga completa
                     updateUIForParticipant();
                     loadParticipants();
                     
-                    // Limpiar formulario
                     document.getElementById('regUsername').value = '';
                     document.getElementById('regEmail').value = '';
                     document.getElementById('regProfileLink').value = '';
@@ -1889,7 +1896,6 @@
                     currentUser = null;
                     isUserParticipating = false;
                     
-                    // Resetear UI
                     const enterBtn = document.getElementById('enterBtn');
                     enterBtn.textContent = 'Participar en el Evento';
                     enterBtn.classList.remove('entered');
@@ -1937,7 +1943,6 @@
             });
         });
         
-        // Debug helper
         function debugCurrentState() {
             console.log('🔍 DEBUG - Estado actual:', {
                 currentUser: currentUser,
@@ -1953,7 +1958,6 @@
             }
         }
         
-        // Exponer función de debug para consola
         window.debugEvent = debugCurrentState;
     </script>
 </body>
