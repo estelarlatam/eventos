@@ -1522,9 +1522,9 @@
         }
 
         // ==========================================
-        // RENDERIZAR RANKINGS
+        // RENDERIZAR RANKINGS - CORREGIDO
         // ==========================================
-        
+
         function renderRankings() {
             const list = document.getElementById('rankingList');
             
@@ -1549,10 +1549,16 @@
                 else if (rank === 2) rankClass = 'rank-2';
                 else if (rank === 3) rankClass = 'rank-3';
                 
+                // ✅ CORRECCIÓN: Soportar ambos nombres de campo
+                const imageUrl = user.profileImage || user.avatarUrl || user.profile_image || '';
+                const hasImage = imageUrl && imageUrl.trim() !== '';
+                
+                console.log(`👤 ${user.username} - Imagen:`, hasImage ? 'SÍ' : 'NO', imageUrl.substring(0, 30));
+                
                 // Manejo de imagen con fallback
                 let avatarContent;
-                if (user.profileImage && user.profileImage.trim() !== '') {
-                    avatarContent = `<img src="${user.profileImage}" alt="${user.username}" 
+                if (hasImage) {
+                    avatarContent = `<img src="${imageUrl}" alt="${user.username}" 
                         onerror="this.onerror=null; this.parentElement.innerHTML='${user.username.charAt(0).toUpperCase()}'; 
                         this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">`;
                 } else {
@@ -1635,8 +1641,11 @@
             const img = document.getElementById('userAvatarImg');
             const initial = document.getElementById('userInitial');
             
-            if (currentUser.avatarUrl || currentUser.profileImage) {
-                img.src = currentUser.avatarUrl || currentUser.profileImage;
+            // ✅ Soportar ambos nombres de campo
+            const imageUrl = currentUser.profileImage || currentUser.avatarUrl || currentUser.profile_image || '';
+            
+            if (imageUrl && imageUrl.trim() !== '') {
+                img.src = imageUrl;
                 img.style.display = 'block';
                 initial.style.display = 'none';
             } else {
